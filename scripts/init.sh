@@ -12,18 +12,22 @@ echo "================================================"
 echo ""
 
 # --- Collect inputs ---
+read -p "GitHub org or username (e.g. acme): " GITHUB_OWNER
+read -p "GitHub repo name (e.g. user-service): " GITHUB_REPO
 read -p "Group ID (e.g. com.acme): " GROUP
 read -p "Artifact / project name (e.g. user-service): " ARTIFACT
 read -p "Base package (e.g. com.acme.users) [leave blank to derive from group.artifact]: " PACKAGE
 read -p "Keep PR template? [Y/n] " KEEP_PR_TEMPLATE
 read -p "Keep issue templates? [Y/n] " KEEP_ISSUE_TEMPLATES
 read -p "Keep CONTRIBUTING.md? [Y/n] " KEEP_CONTRIBUTING
+read -p "Install ktlint pre-commit hook? [Y/n] " INSTALL_HOOK
 
 if [[ -z "$PACKAGE" ]]; then
   PACKAGE="${GROUP}.$(echo "$ARTIFACT" | tr '-' '.')"
 fi
 
 echo ""
+echo "  GitHub:   $GITHUB_OWNER/$GITHUB_REPO"
 echo "  Group:    $GROUP"
 echo "  Artifact: $ARTIFACT"
 echo "  Package:  $PACKAGE"
@@ -61,6 +65,9 @@ mv "$TEST_TEMPLATE_PATH" "$TEST_TARGET_PATH"
 # Clean up empty parent dirs left behind
 find src -type d -empty -delete
 
+echo "→ Updating README badges..."
+sed -i "s|your-org/spring-identity-template|${GITHUB_OWNER}/${GITHUB_REPO}|g" README.md
+
 echo "→ Removing template-only files..."
 rm -f .github/workflows/update-badges.yml
 
@@ -76,12 +83,21 @@ if [[ "$KEEP_CONTRIBUTING" =~ ^[Nn]$ ]]; then
   rm -f CONTRIBUTING.md
 fi
 
+if [[ ! "$INSTALL_HOOK" =~ ^[Nn]$ ]]; then
+  echo "→ Installing ktlint pre-commit hook..."
+  ./gradlew addKtlintCheckGitPreCommitHook --no-daemon
+fi
+
 echo "→ Cleaning up initializer..."
 rm -- "$0"
 
 echo ""
 echo "Done! Your project is ready."
 echo "Next steps:"
-echo "  1. Run: ./gradlew addKtlintCheckGitPreCommitHook"
-echo "  2. Update .env.example with your config"
-echo "  3. Commit the renamed project"
+echo "  1. Update .env.example with your config"
+echo "  2. Commit the renamed project"
+if [[ "$INSTALL_HOOK" =~ ^[Nn]$ ]]; then
+  echo ""
+  echo "  To install the ktlint pre-commit hook later:"
+  echo "    ./gradlew addKtlintCheckGitPreCommitHook"
+fi

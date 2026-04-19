@@ -1,79 +1,69 @@
-# Spring Boot Kotlin Identity Service Template
+# Spring Identity Template
 
-A production-grade identity service template built with Kotlin, Spring Boot, and pragmatic Clean Architecture.
+![CI](https://github.com/your-org/spring-identity-template/actions/workflows/ci.yml/badge.svg)
+![Java](https://img.shields.io/badge/Java-25-ED8B00)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.3-6DB33F)
+![version](https://img.shields.io/badge/version-v0.0.0-orange)
 
-This repo is a **starting point** — clone, rename, adapt. It ships with JWT auth, refresh token rotation, OAuth (Google, extensible), password reset, and all the observability scaffolding you need to deploy to production.
+A production-ready Spring Boot identity service template covering authentication, user management, and all the infrastructure scaffolding needed to deploy to production.
 
-![Status](https://img.shields.io/badge/Status-Template-blue) ![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-purple) ![Spring](https://img.shields.io/badge/Spring%20Boot-3.x-green)
+## Getting started
 
----
+```bash
+# 1. Click "Use this template" on GitHub, clone your repo, then:
+bash scripts/init.sh
 
-## 🎯 What's Inside
+# 2. Configure your environment
+cp .env.example .env
 
-- **Auth flows** — email/password, Google OAuth (extensible provider registry), password reset via email
-- **JWT access tokens** (15min) + **opaque refresh tokens** stored in DB with rotation (30d)
-- **Clean Architecture** — three layers (domain / application / infrastructure), one use case per action
-- **Observability** — Actuator health/readiness/metrics, Prometheus-ready, JSON structured logs in prod
-- **Migrations** — Flyway, versioned SQL files (`V1__create_users.sql`, `V2__...`)
-- **OpenAPI** — Swagger UI at `/swagger-ui.html`
+# 3. Start the database
+docker-compose up -d
 
----
+# 4. Run
+./gradlew bootRun
+```
 
-## 🛠 Stack
+API: `http://localhost:8080` — Swagger UI: `http://localhost:8080/swagger-ui.html` (dev profile only)
 
-Kotlin 1.9+ · JDK 21 · Spring Boot 3 · PostgreSQL 18 · Flyway · jjwt 0.12 · MockK
+## What's included
 
----
+- Email/password auth, Google OAuth (extensible), password reset via email
+- JWT access tokens (15 min) + opaque refresh tokens with rotation and reuse detection
+- Clean architecture (domain / application / infrastructure), one use case per action
+- PostgreSQL + Flyway migrations, Spring Security 6, Actuator, Prometheus, structured logging
 
-## 🚀 Getting Started
+| Method  | Path                    | Auth   | Description                  |
+|---------|-------------------------|--------|------------------------------|
+| `POST`  | `/auth/register`        | Public | Register with email/password |
+| `POST`  | `/auth/login`           | Public | Login with email/password    |
+| `POST`  | `/auth/oauth/login`     | Public | Login with OAuth provider    |
+| `POST`  | `/auth/refresh`         | Public | Rotate refresh token         |
+| `POST`  | `/auth/logout`          | Public | Revoke refresh token         |
+| `POST`  | `/auth/forgot-password` | Public | Request password reset email |
+| `POST`  | `/auth/reset-password`  | Public | Reset password with token    |
+| `GET`   | `/users/me`             | Bearer | Get current user             |
+| `PATCH` | `/users/me`             | Bearer | Update current user          |
+| `GET`   | `/users/{id}`           | Bearer | Get public user profile      |
 
-### Prerequisites
-- JDK 21
-- Docker + Docker Compose (for local Postgres)
+Architecture overview and ADRs in [ARCHITECTURE.md](./ARCHITECTURE.md) and [docs/adr/](./docs/adr/README.md).
 
-### Run locally
+## Development
 
-1. Copy the env file:
-   ~~~bash
-   cp .env.example .env
-   ~~~
+```bash
+# Install the ktlint pre-commit hook (once per clone)
+./gradlew addKtlintCheckGitPreCommitHook
 
-2. Start Postgres:
-   ~~~bash
-   docker compose up -d
-   ~~~
+# Run tests
+./gradlew test
+```
 
-3. Run the app:
-   ~~~bash
-   ./gradlew bootRun
-   ~~~
+## CI/CD
 
-4. Verify:
-    - Swagger: http://localhost:8080/swagger-ui.html
-    - Health:  http://localhost:8080/actuator/health
+| Workflow      | Trigger               | Description                                |
+|---------------|-----------------------|--------------------------------------------|
+| `ci.yml`      | Pull request          | Lint + tests                               |
+| `codeql.yml`  | Pull request + weekly | Static security analysis                   |
+| `publish.yml` | Manual / tags         | Docker build, push to GHCR, GitHub release |
 
----
-
-## 🧩 Using This Template
-
-1. Click **"Use this template"** on GitHub to create a new repo.
-2. Rename the package `com.template.identity` to your own (e.g., `dev.clicappart.identity`).
-3. Update `application.yml` prefixes if needed.
-4. Configure your secrets in `.env`.
-5. Add your own use cases alongside the existing ones.
-6. Adapt `OAuthProvider` if you're using providers other than Google.
-
----
-
-## 📐 Documentation
-
-- [**ARCHITECTURE.md**](./ARCHITECTURE.md) — daily reference: folder structure, layer rules, naming, patterns, rules
-- [**docs/adr/**](./docs/adr/) — Architecture Decision Records explaining *why* each major choice was made
-
----
-
-## 🔄 Adapting This Template
-
-This is an opinionated template. The architecture rules in `ARCHITECTURE.md` are strict by design.
-
-When a rule doesn't fit your project, **document the change as a new ADR** instead of silently diverging. This keeps the reasoning visible to whoever (including future you) picks up the repo later.
+> Branch protection rules and secrets are not copied when using this template — configure them after running `init.sh`.
