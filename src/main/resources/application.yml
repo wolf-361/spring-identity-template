@@ -20,10 +20,6 @@ spring:
         format_sql: false
     show-sql: false
 
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-
   mail:
     host: smtp-relay.brevo.com
     port: 587
@@ -74,6 +70,16 @@ app:
 
   google:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID:}
+
+  github:
+    client-id: ${GITHUB_OAUTH_CLIENT_ID:}
+
+  apple:
+    client-id: ${APPLE_OAUTH_CLIENT_ID:}
+
+  microsoft:
+    client-id: ${MICROSOFT_OAUTH_CLIENT_ID:}
+    tenant-id: ${MICROSOFT_OAUTH_TENANT_ID:common}
 
   email:
     from-address: ${EMAIL_FROM_ADDRESS:noreply@example.com}
