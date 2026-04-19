@@ -15,6 +15,9 @@ echo ""
 read -p "Group ID (e.g. com.acme): " GROUP
 read -p "Artifact / project name (e.g. user-service): " ARTIFACT
 read -p "Base package (e.g. com.acme.users) [leave blank to derive from group.artifact]: " PACKAGE
+read -p "Keep PR template? [Y/n] " KEEP_PR_TEMPLATE
+read -p "Keep issue templates? [Y/n] " KEEP_ISSUE_TEMPLATES
+read -p "Keep CONTRIBUTING.md? [Y/n] " KEEP_CONTRIBUTING
 
 if [[ -z "$PACKAGE" ]]; then
   PACKAGE="${GROUP}.$(echo "$ARTIFACT" | tr '-' '.')"
@@ -60,6 +63,18 @@ find src -type d -empty -delete
 
 echo "→ Removing template-only files..."
 rm -f .github/workflows/update-badges.yml
+
+if [[ "$KEEP_PR_TEMPLATE" =~ ^[Nn]$ ]]; then
+  rm -f .github/PULL_REQUEST_TEMPLATE.md
+fi
+
+if [[ "$KEEP_ISSUE_TEMPLATES" =~ ^[Nn]$ ]]; then
+  rm -rf .github/ISSUE_TEMPLATE/
+fi
+
+if [[ "$KEEP_CONTRIBUTING" =~ ^[Nn]$ ]]; then
+  rm -f CONTRIBUTING.md
+fi
 
 echo "→ Cleaning up initializer..."
 rm -- "$0"
