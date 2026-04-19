@@ -154,6 +154,7 @@ class GlobalExceptionHandler {
             correlationId = MDC.get("correlationId")
         )
     )
+
     private fun sanitizeForLog(input: String?): String {
         if (input == null) return ""
         return input.replace(Regex("[\\r\\n\\t\\u0000-\\u001F\\u007F]"), "_")
