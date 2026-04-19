@@ -103,7 +103,7 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.CONFLICT, "OAUTH_ACCOUNT_ALREADY_LINKED", "OAuth account is already linked to another user")
-        .also { log.warn("OAuth account already linked [${req.requestURI}]") }
+        .also { log.warn("OAuth account already linked [{}]", sanitizeForLog(req.requestURI)) }
 
     @ExceptionHandler(DomainException.LastAuthMethodCannotBeRemoved::class)
     fun handleLastAuthMethod(
