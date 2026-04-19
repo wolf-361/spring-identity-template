@@ -1,7 +1,7 @@
 # Spring Identity Template
 
 ![CI](https://github.com/your-org/spring-identity-template/actions/workflows/ci.yml/badge.svg)
-![Java](https://img.shields.io/badge/Java-25-ED8B00)
+![Java](https://img.shields.io/badge/Java-21-ED8B00)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.3-6DB33F)
 ![version](https://img.shields.io/badge/version-v0.0.0-orange)
