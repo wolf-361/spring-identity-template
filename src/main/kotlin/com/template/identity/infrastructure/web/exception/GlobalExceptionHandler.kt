@@ -96,7 +96,13 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.BAD_REQUEST, "OAUTH_PROVIDER_NOT_SUPPORTED", "OAuth provider not supported")
-        .also { log.warn("OAuth provider not supported [${req.requestURI}]: ${ex.message}") }
+        .also {
+            log.warn(
+                "OAuth provider not supported [{}]: {}",
+                sanitizeForLog(req.requestURI),
+                sanitizeForLog(ex.message)
+            )
+        }
 
     @ExceptionHandler(ApplicationException.OAuthAccountAlreadyLinked::class)
     fun handleOAuthAccountAlreadyLinked(
