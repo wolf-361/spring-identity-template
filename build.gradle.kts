@@ -59,6 +59,7 @@ dependencies {
     testImplementation(libs.spring.security.test)
     testImplementation(libs.mockk)
     testImplementation(libs.kotest.assertions)
+    testImplementation(libs.wiremock)
 }
 
 allOpen {

@@ -28,7 +28,7 @@ API: `http://localhost:8080` — Swagger UI: `http://localhost:8080/swagger-ui.h
 
 ## What's included
 
-- Email/password auth, Google OAuth (extensible), password reset via email
+- Email/password auth, OAuth (Google, GitHub, Apple, Microsoft — extensible via `ProviderVerifier`), password reset via email
 - JWT access tokens (15 min) + opaque refresh tokens with rotation and reuse detection
 - Clean architecture (domain / application / infrastructure), one use case per action
 - PostgreSQL + Flyway migrations, Spring Security 6, Actuator, Prometheus, structured logging
