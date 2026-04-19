@@ -89,7 +89,7 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found")
-        .also { log.warn("User not found [${req.requestURI}]") }
+        .also { log.warn("User not found [{}]", sanitizeForLog(req.requestURI)) }
 
     @ExceptionHandler(ApplicationException.OAuthProviderNotSupported::class)
     fun handleOAuthProviderNotSupported(
