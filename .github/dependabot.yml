@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+    groups:
+      kotlin:
+        patterns: [ "org.jetbrains.kotlin*" ]
+      spring:
+        patterns: [ "org.springframework*", "io.spring*" ]
+      test:
+        patterns: [ "io.mockk*", "io.kotest*" ]
