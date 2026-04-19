@@ -1,0 +1,63 @@
+name: Update README Badges
+
+# Template-repo maintenance workflow — remove this file when using the template
+# (scripts/init.sh does this automatically)
+
+on:
+  workflow_run:
+    workflows: [ "Docker Build and Publish" ]
+    types: [ completed ]
+    branches: [ main ]
+
+jobs:
+  update-readme:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate Bot Token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Calculate Metrics
+        id: metrics
+        run: |
+          JAVA_VER=$(grep 'java-version' .github/workflows/publish.yml | head -1 | grep -oP "'\K[^']+")
+          KOTLIN_VER=$(grep '^kotlin = ' gradle/libs.versions.toml | grep -oP '"[^"]+"' | tr -d '"')
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            REL_VER=${GITHUB_REF#refs/tags/}
+          else
+            REL_VER=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          fi
+          echo "java_version=$JAVA_VER" >> $GITHUB_OUTPUT
+          echo "kotlin_version=$KOTLIN_VER" >> $GITHUB_OUTPUT
+          echo "release_version=$REL_VER" >> $GITHUB_OUTPUT
+
+      - name: Update README Badges
+        run: |
+          sed -i "s/Java-.*-ED8B00/Java-${{ steps.metrics.outputs.java_version }}-ED8B00/" README.md
+          sed -i "s/Kotlin-.*-7F52FF/Kotlin-${{ steps.metrics.outputs.kotlin_version }}-7F52FF/" README.md
+          sed -i "s/version-.*-orange/version-${{ steps.metrics.outputs.release_version }}-orange/" README.md
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: automate badge updates [skip ci]"
+            git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}.git
+            git push origin HEAD:main
+          else
+            echo "No changes to README. Skipping commit."
+          fi
