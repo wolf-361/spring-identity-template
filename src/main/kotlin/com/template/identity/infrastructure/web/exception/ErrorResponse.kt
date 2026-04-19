@@ -6,5 +6,5 @@ data class ErrorResponse(
     val code: String,
     val message: String,
     val timestamp: Instant,
-    val correlationId: String?,
+    val correlationId: String?
 )

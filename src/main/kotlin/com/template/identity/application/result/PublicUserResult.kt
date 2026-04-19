@@ -6,13 +6,14 @@ import java.util.UUID
 data class PublicUserResult(
     val id: UUID,
     val firstName: String,
-    val lastName: String,
+    val lastName: String
 ) {
     companion object {
-        fun from(user: User) = PublicUserResult(
-            id = user.id!!,
-            firstName = user.firstName,
-            lastName = user.lastName,
-        )
+        fun from(user: User) =
+            PublicUserResult(
+                id = user.id!!,
+                firstName = user.firstName,
+                lastName = user.lastName
+            )
     }
 }

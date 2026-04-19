@@ -9,11 +9,9 @@ import java.time.Instant
 
 @Repository
 class PasswordResetTokenRepositoryImpl(
-    private val jpa: JpaPasswordResetTokenRepository,
+    private val jpa: JpaPasswordResetTokenRepository
 ) : PasswordResetTokenRepository {
-
-    override fun findByTokenHash(tokenHash: String): PasswordResetToken? =
-        jpa.findByTokenHash(tokenHash)
+    override fun findByTokenHash(tokenHash: String): PasswordResetToken? = jpa.findByTokenHash(tokenHash)
 
     override fun save(token: PasswordResetToken): PasswordResetToken = jpa.save(token)
 

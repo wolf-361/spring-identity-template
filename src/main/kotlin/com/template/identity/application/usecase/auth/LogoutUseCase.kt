@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Service
 class LogoutUseCase(
-    private val refreshTokenRepository: RefreshTokenRepository,
+    private val refreshTokenRepository: RefreshTokenRepository
 ) {
     @Transactional
     fun execute(command: LogoutCommand) {

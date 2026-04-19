@@ -6,5 +6,5 @@ data class UpdateCurrentUserCommand(
     val userId: UUID,
     val firstName: String? = null,
     val lastName: String? = null,
-    val email: String? = null,
+    val email: String? = null
 )

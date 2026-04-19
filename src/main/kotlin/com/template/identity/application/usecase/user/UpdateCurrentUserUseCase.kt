@@ -1,9 +1,9 @@
 package com.template.identity.application.usecase.user
 
 import com.template.identity.application.command.UpdateCurrentUserCommand
-import com.template.identity.application.result.UserResult
 import com.template.identity.application.exception.ApplicationException
 import com.template.identity.application.repository.UserRepository
+import com.template.identity.application.result.UserResult
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,12 +18,13 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Service
 class UpdateCurrentUserUseCase(
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepository
 ) {
     @Transactional
     fun execute(command: UpdateCurrentUserCommand): UserResult {
-        val user = userRepository.findById(command.userId)
-            ?: throw ApplicationException.UserNotFound()
+        val user =
+            userRepository.findById(command.userId)
+                ?: throw ApplicationException.UserNotFound()
 
         if (command.email != null && command.email != user.email) {
             if (userRepository.existsByEmail(command.email)) {

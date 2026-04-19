@@ -11,20 +11,27 @@ import org.springframework.stereotype.Service
 @Service
 class BrevoEmailSender(
     private val mailSender: JavaMailSender,
-    private val appProperties: AppProperties,
+    private val appProperties: AppProperties
 ) : EmailSender {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun sendPasswordResetEmail(to: String, firstName: String, resetLink: String) {
+    override fun sendPasswordResetEmail(
+        to: String,
+        firstName: String,
+        resetLink: String
+    ) {
         sendHtmlEmail(
             to = to,
             subject = "Reset your password",
-            htmlContent = buildResetBody(firstName, resetLink),
+            htmlContent = buildResetBody(firstName, resetLink)
         )
     }
 
-    private fun sendHtmlEmail(to: String, subject: String, htmlContent: String) {
+    private fun sendHtmlEmail(
+        to: String,
+        subject: String,
+        htmlContent: String
+    ) {
         log.info("Preparing to send email to: {} with subject: '{}'", to, subject)
         try {
             val message: MimeMessage = mailSender.createMimeMessage()
@@ -41,7 +48,10 @@ class BrevoEmailSender(
         }
     }
 
-    private fun buildResetBody(firstName: String, resetLink: String) = """
+    private fun buildResetBody(
+        firstName: String,
+        resetLink: String
+    ) = """
         <!DOCTYPE html>
         <html>
         <body>
@@ -51,5 +61,5 @@ class BrevoEmailSender(
           <p>If you didn't request this, you can safely ignore this email.</p>
         </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 }

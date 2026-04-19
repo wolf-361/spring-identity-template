@@ -7,7 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface JpaOAuthAccountRepository : JpaRepository<OAuthAccount, UUID> {
-    fun findByProviderAndProviderUserId(provider: OAuthProvider, providerUserId: String): OAuthAccount?
-    fun findByUserAndProvider(user: User, provider: OAuthProvider): OAuthAccount?
+    fun findByProviderAndProviderUserId(
+        provider: OAuthProvider,
+        providerUserId: String
+    ): OAuthAccount?
+
+    fun findByUserAndProvider(
+        user: User,
+        provider: OAuthProvider
+    ): OAuthAccount?
+
     fun countByUser(user: User): Long
 }

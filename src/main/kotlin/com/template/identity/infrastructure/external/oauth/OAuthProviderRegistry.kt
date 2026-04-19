@@ -7,11 +7,15 @@ import com.template.identity.domain.model.OAuthProvider
 import org.springframework.stereotype.Service
 
 @Service
-class OAuthProviderRegistry(verifiers: List<ProviderVerifier>) : OAuthVerifier {
-
+class OAuthProviderRegistry(
+    verifiers: List<ProviderVerifier>
+) : OAuthVerifier {
     private val registry: Map<OAuthProvider, ProviderVerifier> = verifiers.associateBy { it.provider }
 
-    override fun verify(provider: OAuthProvider, idToken: String): OAuthUserInfo =
+    override fun verify(
+        provider: OAuthProvider,
+        idToken: String
+    ): OAuthUserInfo =
         registry[provider]?.verify(idToken)
             ?: throw ApplicationException.OAuthProviderNotSupported()
 }

@@ -14,16 +14,16 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class ForgotPasswordUseCaseTest {
-
     private val userRepository: UserRepository = mockk()
     private val passwordResetTokenRepository: PasswordResetTokenRepository = mockk(relaxUnitFun = true)
     private val emailSender: EmailSender = mockk()
     private val useCase = ForgotPasswordUseCase(userRepository, passwordResetTokenRepository, emailSender)
 
-    private val command = ForgotPasswordCommand(
-        email = "user@example.com",
-        frontendUrl = "https://app.example.com",
-    )
+    private val command =
+        ForgotPasswordCommand(
+            email = "user@example.com",
+            frontendUrl = "https://app.example.com"
+        )
 
     @Test
     fun `should delete existing token, save new token, and send reset email`() {

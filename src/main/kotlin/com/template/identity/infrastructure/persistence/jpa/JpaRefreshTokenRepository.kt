@@ -9,18 +9,25 @@ import java.time.Instant
 import java.util.UUID
 
 interface JpaRefreshTokenRepository : JpaRepository<RefreshToken, UUID> {
-
     fun findByTokenHash(tokenHash: String): RefreshToken?
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE RefreshToken r SET r.revokedAt = :now WHERE r.id = :id")
-    fun revokeById(@Param("id") id: UUID, @Param("now") now: Instant)
+    fun revokeById(
+        @Param("id") id: UUID,
+        @Param("now") now: Instant
+    )
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE RefreshToken r SET r.revokedAt = :now WHERE r.familyId = :familyId")
-    fun revokeAllByFamilyId(@Param("familyId") familyId: UUID, @Param("now") now: Instant)
+    fun revokeAllByFamilyId(
+        @Param("familyId") familyId: UUID,
+        @Param("now") now: Instant
+    )
 
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM RefreshToken r WHERE r.expiresAt < :now")
-    fun deleteExpired(@Param("now") now: Instant)
+    fun deleteExpired(
+        @Param("now") now: Instant
+    )
 }

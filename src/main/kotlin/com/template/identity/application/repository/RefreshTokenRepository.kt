@@ -5,7 +5,6 @@ import java.util.UUID
 
 /** Persistence contract for [RefreshToken] entities. */
 interface RefreshTokenRepository {
-
     /**
      * Returns the refresh token whose stored SHA-256 hash matches [tokenHash], or null.
      * Lookup is always by hash — raw tokens are never stored.

@@ -15,7 +15,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class LoginUseCaseTest {
-
     private val userRepository: UserRepository = mockk()
     private val passwordEncoder: PasswordEncoder = mockk()
     private val tokenPairIssuer: TokenPairIssuer = mockk()

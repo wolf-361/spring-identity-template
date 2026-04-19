@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class TokenCleanupTask(
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val passwordResetTokenRepository: PasswordResetTokenRepository,
+    private val passwordResetTokenRepository: PasswordResetTokenRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

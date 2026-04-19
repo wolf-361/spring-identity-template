@@ -19,13 +19,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ResetPasswordUseCase(
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
-    private val passwordEncoder: PasswordEncoder,
+    private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional
     fun execute(command: ResetPasswordCommand) {
         val tokenHash = sha256(command.rawToken)
-        val resetToken = passwordResetTokenRepository.findByTokenHash(tokenHash)
-            ?: throw ApplicationException.PasswordResetTokenInvalid()
+        val resetToken =
+            passwordResetTokenRepository.findByTokenHash(tokenHash)
+                ?: throw ApplicationException.PasswordResetTokenInvalid()
 
         if (resetToken.isExpired()) {
             passwordResetTokenRepository.deleteByUser(resetToken.user)

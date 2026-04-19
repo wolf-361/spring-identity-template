@@ -11,6 +11,7 @@ springdoc = "3.0.3"
 logstash-logback = "8.0"
 mockk = "1.14.9"
 kotest = "6.1.11"
+wiremock = "3.9.2"
 
 [libraries]
 # Spring Boot starters (version managed by BOM)
@@ -51,6 +52,7 @@ logstash-logback = { module = "net.logstash.logback:logstash-logback-encoder", v
 # Test
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

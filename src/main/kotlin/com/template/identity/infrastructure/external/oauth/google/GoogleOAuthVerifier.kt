@@ -13,24 +13,25 @@ import org.springframework.web.client.body
 
 @Service
 class GoogleOAuthVerifier(
-    private val appProperties: AppProperties,
+    private val appProperties: AppProperties
 ) : ProviderVerifier {
-
     override val provider = OAuthProvider.GOOGLE
 
     private val log = LoggerFactory.getLogger(javaClass)
     private val restClient = RestClient.create()
 
     override fun verify(idToken: String): OAuthUserInfo {
-        val claims = try {
-            restClient.get()
-                .uri("${appProperties.google.tokenInfoUrl}?id_token={token}", idToken)
-                .retrieve()
-                .body<GoogleTokenClaims>()
-        } catch (e: Exception) {
-            log.warn("Google token verification request failed: ${e.javaClass.simpleName}")
-            throw RuntimeException("Google token verification failed", e)
-        } ?: throw RuntimeException("Empty response from Google tokeninfo")
+        val claims =
+            try {
+                restClient
+                    .get()
+                    .uri("${appProperties.google.tokenInfoUrl}?id_token={token}", idToken)
+                    .retrieve()
+                    .body<GoogleTokenClaims>()
+            } catch (e: Exception) {
+                log.warn("Google token verification request failed: ${e.javaClass.simpleName}")
+                throw RuntimeException("Google token verification failed", e)
+            } ?: throw RuntimeException("Empty response from Google tokeninfo")
 
         val clientId = appProperties.google.clientId
         if (clientId.isNotBlank() && claims.aud != clientId) {
@@ -42,7 +43,7 @@ class GoogleOAuthVerifier(
             providerUserId = claims.sub,
             email = claims.email,
             firstName = claims.givenName.ifBlank { claims.email.substringBefore("@") },
-            lastName = claims.familyName,
+            lastName = claims.familyName
         )
     }
 
@@ -54,6 +55,6 @@ class GoogleOAuthVerifier(
         val givenName: String = "",
         @field:JsonProperty("family_name")
         val familyName: String = "",
-        val aud: String,
+        val aud: String
     )
 }

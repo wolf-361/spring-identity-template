@@ -6,8 +6,9 @@ package com.template.identity.application.exception
  * Mapped to generic external responses by [com.template.identity.infrastructure.web.exception.GlobalExceptionHandler].
  * Clients never see internal exception names or messages — only a stable [code] and a safe [message].
  */
-sealed class ApplicationException(message: String) : RuntimeException(message) {
-
+sealed class ApplicationException(
+    message: String
+) : RuntimeException(message) {
     // ── Auth ──────────────────────────────────────────────────────────────────
 
     /**

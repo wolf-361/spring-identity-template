@@ -7,8 +7,7 @@ data class OAuthLoginRequest(
     @field:NotBlank
     @field:Schema(description = "OAuth provider name", example = "GOOGLE", allowableValues = ["GOOGLE"])
     val provider: String,
-
     @field:NotBlank
     @field:Schema(description = "ID token returned by the OAuth provider after consent")
-    val idToken: String,
+    val idToken: String
 )
