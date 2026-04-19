@@ -1,17 +1,16 @@
 [versions]
-spring-boot = "4.0.3"
+spring-boot = "4.0.5"
 spring-dependency-management = "1.1.7"
 kotlin = "2.2.21"
 ktlint-plugin = "14.2.0"
 
 jjwt = "0.12.6"
 flyway = "12.4.0"
-micrometer-prometheus = "1.15.0"
+micrometer-prometheus = "1.16.5"
 springdoc = "3.0.3"
 logstash-logback = "8.0"
-mockk = "1.13.12"
-kotest = "5.9.1"
-wiremock = "3.9.2"
+mockk = "1.14.9"
+kotest = "6.1.11"
 
 [libraries]
 # Spring Boot starters (version managed by BOM)
