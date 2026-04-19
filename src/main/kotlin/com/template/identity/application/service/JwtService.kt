@@ -7,7 +7,6 @@ import java.util.UUID
  * Issues and validates JWT access tokens, and exposes refresh token timing configuration.
  */
 interface JwtService {
-
     /**
      * Generates a signed JWT access token for [userId].
      * TTL is determined by the `app.jwt.access-token-ttl` configuration property.

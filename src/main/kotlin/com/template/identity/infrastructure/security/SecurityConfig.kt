@@ -18,9 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val appProperties: AppProperties,
+    private val appProperties: AppProperties
 ) {
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -28,17 +27,17 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers(
-                    "/auth/**",
-                    "/users/*/public",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/v3/api-docs/**",
-                    "/error",
-                ).permitAll()
+                auth
+                    .requestMatchers(
+                        "/auth/**",
+                        "/users/*/public",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/error"
+                    ).permitAll()
                 auth.anyRequest().authenticated()
-            }
-            .exceptionHandling { ex ->
+            }.exceptionHandling { ex ->
                 ex.authenticationEntryPoint { _, response, _ ->
                     response.contentType = "application/json"
                     response.status = HttpServletResponse.SC_UNAUTHORIZED
@@ -46,8 +45,7 @@ class SecurityConfig(
                         """{"code":"UNAUTHORIZED","message":"Authentication required"}"""
                     )
                 }
-            }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }

@@ -9,27 +9,31 @@ import com.template.identity.infrastructure.web.dto.response.UserResponse
 import java.util.UUID
 
 object UserWebMapper {
-
-    fun toCommand(request: UpdateCurrentUserRequest, userId: UUID) = UpdateCurrentUserCommand(
+    fun toCommand(
+        request: UpdateCurrentUserRequest,
+        userId: UUID
+    ) = UpdateCurrentUserCommand(
         userId = userId,
         email = request.email,
         firstName = request.firstName,
-        lastName = request.lastName,
+        lastName = request.lastName
     )
 
-    fun toResponse(result: UserResult) = UserResponse(
-        id = result.id,
-        email = result.email,
-        firstName = result.firstName,
-        lastName = result.lastName,
-        isActive = result.isActive,
-        createdAt = result.createdAt,
-        updatedAt = result.updatedAt,
-    )
+    fun toResponse(result: UserResult) =
+        UserResponse(
+            id = result.id,
+            email = result.email,
+            firstName = result.firstName,
+            lastName = result.lastName,
+            isActive = result.isActive,
+            createdAt = result.createdAt,
+            updatedAt = result.updatedAt
+        )
 
-    fun toPublicResponse(result: PublicUserResult) = PublicUserResponse(
-        id = result.id,
-        firstName = result.firstName,
-        lastName = result.lastName,
-    )
+    fun toPublicResponse(result: PublicUserResult) =
+        PublicUserResponse(
+            id = result.id,
+            firstName = result.firstName,
+            lastName = result.lastName
+        )
 }

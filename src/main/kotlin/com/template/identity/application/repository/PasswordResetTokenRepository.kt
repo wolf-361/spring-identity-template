@@ -5,7 +5,6 @@ import com.template.identity.domain.model.User
 
 /** Persistence contract for [PasswordResetToken] entities. */
 interface PasswordResetTokenRepository {
-
     /**
      * Returns the token whose stored SHA-256 hash matches [tokenHash], or null.
      * Lookup is always by hash — the raw token sent in the reset link is never stored.

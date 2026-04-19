@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class GetPublicUserUseCaseTest {
-
     private val userRepository: UserRepository = mockk()
     private val useCase = GetPublicUserUseCase(userRepository)
 

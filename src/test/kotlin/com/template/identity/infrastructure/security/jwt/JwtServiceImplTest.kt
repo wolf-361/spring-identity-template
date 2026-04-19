@@ -9,12 +9,12 @@ import java.time.Duration
 import java.util.UUID
 
 class JwtServiceImplTest {
-
-    private val validProperties = JwtProperties(
-        secret = "test-secret-key-that-is-at-least-32-characters-long-for-hmac",
-        accessTokenTtl = Duration.ofMinutes(15),
-        refreshTokenTtl = Duration.ofDays(30),
-    )
+    private val validProperties =
+        JwtProperties(
+            secret = "test-secret-key-that-is-at-least-32-characters-long-for-hmac",
+            accessTokenTtl = Duration.ofMinutes(15),
+            refreshTokenTtl = Duration.ofDays(30)
+        )
 
     private val service = JwtServiceImpl(validProperties)
 
@@ -55,9 +55,10 @@ class JwtServiceImplTest {
     @Test
     fun `should return false for an expired token`() {
         // Arrange
-        val expiredService = JwtServiceImpl(
-            validProperties.copy(accessTokenTtl = Duration.ofMillis(-1))
-        )
+        val expiredService =
+            JwtServiceImpl(
+                validProperties.copy(accessTokenTtl = Duration.ofMillis(-1))
+            )
         val token = expiredService.generateAccessToken(UUID.randomUUID())
 
         // Act & Assert
@@ -77,9 +78,10 @@ class JwtServiceImplTest {
     @Test
     fun `should return false for a token signed with a different secret`() {
         // Arrange
-        val otherService = JwtServiceImpl(
-            validProperties.copy(secret = "other-secret-key-that-is-at-least-32-characters-long")
-        )
+        val otherService =
+            JwtServiceImpl(
+                validProperties.copy(secret = "other-secret-key-that-is-at-least-32-characters-long")
+            )
         val token = otherService.generateAccessToken(UUID.randomUUID())
 
         // Act & Assert

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 
 class ResetPasswordUseCaseTest {
-
     private val passwordResetTokenRepository: PasswordResetTokenRepository = mockk(relaxUnitFun = true)
     private val passwordEncoder: PasswordEncoder = mockk()
     private val useCase = ResetPasswordUseCase(passwordResetTokenRepository, passwordEncoder)
@@ -50,10 +49,11 @@ class ResetPasswordUseCaseTest {
     fun `should delete token and throw PasswordResetTokenExpired when token TTL has passed`() {
         // Arrange
         val user = buildUser()
-        val expiredToken = buildPasswordResetToken(
-            user = user,
-            expiresAt = Instant.now().minusSeconds(60),
-        )
+        val expiredToken =
+            buildPasswordResetToken(
+                user = user,
+                expiresAt = Instant.now().minusSeconds(60)
+            )
         every { passwordResetTokenRepository.findByTokenHash(any()) } returns expiredToken
 
         // Act & Assert

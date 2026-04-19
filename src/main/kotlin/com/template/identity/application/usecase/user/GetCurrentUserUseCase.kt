@@ -1,9 +1,9 @@
 package com.template.identity.application.usecase.user
 
 import com.template.identity.application.command.GetCurrentUserCommand
-import com.template.identity.application.result.UserResult
 import com.template.identity.application.exception.ApplicationException
 import com.template.identity.application.repository.UserRepository
+import com.template.identity.application.result.UserResult
 import org.springframework.stereotype.Service
 
 /**
@@ -13,11 +13,12 @@ import org.springframework.stereotype.Service
  */
 @Service
 class GetCurrentUserUseCase(
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepository
 ) {
     fun execute(command: GetCurrentUserCommand): UserResult {
-        val user = userRepository.findById(command.userId)
-            ?: throw ApplicationException.UserNotFound()
+        val user =
+            userRepository.findById(command.userId)
+                ?: throw ApplicationException.UserNotFound()
         return UserResult.from(user)
     }
 }

@@ -12,13 +12,12 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 @Order(2)
 class RequestLoggingFilter : OncePerRequestFilter() {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain,
+        filterChain: FilterChain
     ) {
         val start = System.currentTimeMillis()
         MDC.put("method", request.method)

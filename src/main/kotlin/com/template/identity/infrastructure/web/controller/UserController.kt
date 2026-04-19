@@ -33,16 +33,18 @@ import java.util.UUID
 class UserController(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val updateCurrentUserUseCase: UpdateCurrentUserUseCase,
-    private val getPublicUserUseCase: GetPublicUserUseCase,
+    private val getPublicUserUseCase: GetPublicUserUseCase
 ) {
-
     @GetMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Get the authenticated user's full profile")
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Profile returned"),
-        ApiResponse(responseCode = "401", description = "Missing or invalid access token",
-            content = [Content(schema = Schema(implementation = ErrorResponse::class))]),
+        ApiResponse(
+            responseCode = "401",
+            description = "Missing or invalid access token",
+            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        )
     )
     fun getCurrentUser(): UserResponse {
         val result = getCurrentUserUseCase.execute(GetCurrentUserCommand(currentUserId()))
@@ -57,14 +59,25 @@ class UserController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Updated profile returned"),
-        ApiResponse(responseCode = "400", description = "Validation error",
-            content = [Content(schema = Schema(implementation = ErrorResponse::class))]),
-        ApiResponse(responseCode = "401", description = "Missing or invalid access token",
-            content = [Content(schema = Schema(implementation = ErrorResponse::class))]),
-        ApiResponse(responseCode = "409", description = "Email already in use — code: REGISTRATION_FAILED",
-            content = [Content(schema = Schema(implementation = ErrorResponse::class))]),
+        ApiResponse(
+            responseCode = "400",
+            description = "Validation error",
+            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        ),
+        ApiResponse(
+            responseCode = "401",
+            description = "Missing or invalid access token",
+            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        ),
+        ApiResponse(
+            responseCode = "409",
+            description = "Email already in use — code: REGISTRATION_FAILED",
+            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        )
     )
-    fun updateCurrentUser(@Valid @RequestBody request: UpdateCurrentUserRequest): UserResponse {
+    fun updateCurrentUser(
+        @Valid @RequestBody request: UpdateCurrentUserRequest
+    ): UserResponse {
         val command = UserWebMapper.toCommand(request, currentUserId())
         val result = updateCurrentUserUseCase.execute(command)
         return UserWebMapper.toResponse(result)
@@ -74,17 +87,23 @@ class UserController(
     @Operation(summary = "Get a user's public profile by ID")
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "Public profile returned"),
-        ApiResponse(responseCode = "404", description = "User not found — code: USER_NOT_FOUND",
-            content = [Content(schema = Schema(implementation = ErrorResponse::class))]),
+        ApiResponse(
+            responseCode = "404",
+            description = "User not found — code: USER_NOT_FOUND",
+            content = [Content(schema = Schema(implementation = ErrorResponse::class))]
+        )
     )
-    fun getPublicUser(@PathVariable id: UUID): PublicUserResponse {
+    fun getPublicUser(
+        @PathVariable id: UUID
+    ): PublicUserResponse {
         val result = getPublicUserUseCase.execute(id)
         return UserWebMapper.toPublicResponse(result)
     }
 
     private fun currentUserId(): UUID {
-        val auth = SecurityContextHolder.getContext().authentication
-            ?: error("Authenticated endpoint reached with no security context — check SecurityConfig")
+        val auth =
+            SecurityContextHolder.getContext().authentication
+                ?: error("Authenticated endpoint reached with no security context — check SecurityConfig")
         val principal = auth.principal as UserDetails
         return UUID.fromString(principal.username)
     }

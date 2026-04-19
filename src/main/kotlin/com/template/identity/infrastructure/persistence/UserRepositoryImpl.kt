@@ -9,9 +9,8 @@ import java.util.UUID
 
 @Repository
 class UserRepositoryImpl(
-    private val jpa: JpaUserRepository,
+    private val jpa: JpaUserRepository
 ) : UserRepository {
-
     override fun findById(id: UUID): User? = jpa.findByIdOrNull(id)
 
     override fun findByEmail(email: String): User? = jpa.findByEmail(email)

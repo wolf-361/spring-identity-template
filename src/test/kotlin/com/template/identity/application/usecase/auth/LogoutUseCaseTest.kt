@@ -12,7 +12,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class LogoutUseCaseTest {
-
     private val refreshTokenRepository: RefreshTokenRepository = mockk()
     private val useCase = LogoutUseCase(refreshTokenRepository)
 

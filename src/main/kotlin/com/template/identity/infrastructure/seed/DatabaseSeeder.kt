@@ -12,9 +12,8 @@ import org.springframework.stereotype.Component
 @Profile("dev")
 class DatabaseSeeder(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
+    private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun run(vararg args: String) {
@@ -25,7 +24,7 @@ class DatabaseSeeder(
                 email = DEV_EMAIL,
                 password = passwordEncoder.encode("password"),
                 firstName = "Dev",
-                lastName = "User",
+                lastName = "User"
             )
         )
         log.info("Seeded dev user: {} / password", DEV_EMAIL)

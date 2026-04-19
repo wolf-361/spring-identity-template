@@ -1,9 +1,9 @@
 package com.template.identity.application.usecase.auth
 
 import com.template.identity.application.command.RefreshTokensCommand
-import com.template.identity.application.result.AuthenticationResult
 import com.template.identity.application.exception.ApplicationException
 import com.template.identity.application.repository.RefreshTokenRepository
+import com.template.identity.application.result.AuthenticationResult
 import com.template.identity.application.service.TokenPairIssuer
 import com.template.identity.application.sha256
 import org.springframework.stereotype.Service
@@ -23,13 +23,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class RefreshTokensUseCase(
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val tokenPairIssuer: TokenPairIssuer,
+    private val tokenPairIssuer: TokenPairIssuer
 ) {
     @Transactional
     fun execute(command: RefreshTokensCommand): AuthenticationResult {
         val tokenHash = sha256(command.rawRefreshToken)
-        val token = refreshTokenRepository.findByTokenHash(tokenHash)
-            ?: throw ApplicationException.RefreshTokenInvalid()
+        val token =
+            refreshTokenRepository.findByTokenHash(tokenHash)
+                ?: throw ApplicationException.RefreshTokenInvalid()
 
         if (token.isRevoked()) {
             refreshTokenRepository.revokeAllByFamilyId(token.familyId)

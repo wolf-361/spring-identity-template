@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test
 import java.time.Instant
 
 class RefreshTokensUseCaseTest {
-
     private val refreshTokenRepository: RefreshTokenRepository = mockk()
     private val tokenPairIssuer: TokenPairIssuer = mockk()
     private val useCase = RefreshTokensUseCase(refreshTokenRepository, tokenPairIssuer)
@@ -70,10 +69,11 @@ class RefreshTokensUseCaseTest {
     @Test
     fun `should throw RefreshTokenExpired when token TTL has passed`() {
         // Arrange
-        val expiredToken = buildRefreshToken(
-            user = buildUser(),
-            expiresAt = Instant.now().minusSeconds(60),
-        )
+        val expiredToken =
+            buildRefreshToken(
+                user = buildUser(),
+                expiresAt = Instant.now().minusSeconds(60)
+            )
         every { refreshTokenRepository.findByTokenHash(any()) } returns expiredToken
 
         // Act & Assert

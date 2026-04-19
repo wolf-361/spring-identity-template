@@ -19,7 +19,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class OAuthLoginUseCaseTest {
-
     private val oauthVerifier: OAuthVerifier = mockk()
     private val userRepository: UserRepository = mockk()
     private val oauthAccountRepository: OAuthAccountRepository = mockk()
@@ -35,7 +34,13 @@ class OAuthLoginUseCaseTest {
         val oauthAccount = buildOAuthAccount(user = user, providerEmail = "old@gmail.com")
         val userInfo = buildOAuthUserInfo(email = "new@gmail.com")
         every { oauthVerifier.verify(OAuthProvider.GOOGLE, command.idToken) } returns userInfo
-        every { oauthAccountRepository.findByProviderAndProviderUserId(OAuthProvider.GOOGLE, userInfo.providerUserId) } returns oauthAccount
+        every {
+            oauthAccountRepository.findByProviderAndProviderUserId(
+                OAuthProvider.GOOGLE,
+                userInfo.providerUserId
+            )
+        } returns
+            oauthAccount
         every { oauthAccountRepository.save(oauthAccount) } returns oauthAccount
         every { tokenPairIssuer.issue(user, any()) } returns buildAuthResult(user)
 

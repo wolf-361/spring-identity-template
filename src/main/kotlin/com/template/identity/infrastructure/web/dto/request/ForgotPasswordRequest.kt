@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotBlank
 data class ForgotPasswordRequest(
     @field:Email @field:NotBlank
     @field:Schema(description = "Email address of the account to reset", example = "user@example.com")
-    val email: String,
+    val email: String
 )

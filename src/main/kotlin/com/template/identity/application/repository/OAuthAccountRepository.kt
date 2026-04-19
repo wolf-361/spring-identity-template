@@ -6,15 +6,20 @@ import com.template.identity.domain.model.User
 
 /** Persistence contract for [OAuthAccount] entities. */
 interface OAuthAccountRepository {
-
     /**
      * Returns the OAuth account matching the given [provider] and external [providerUserId],
      * or null if no account is linked yet.
      */
-    fun findByProviderAndProviderUserId(provider: OAuthProvider, providerUserId: String): OAuthAccount?
+    fun findByProviderAndProviderUserId(
+        provider: OAuthProvider,
+        providerUserId: String
+    ): OAuthAccount?
 
     /** Returns the OAuth account for [user] with [provider], or null if not linked. */
-    fun findByUserAndProvider(user: User, provider: OAuthProvider): OAuthAccount?
+    fun findByUserAndProvider(
+        user: User,
+        provider: OAuthProvider
+    ): OAuthAccount?
 
     /**
      * Returns the total number of OAuth accounts linked to [user].

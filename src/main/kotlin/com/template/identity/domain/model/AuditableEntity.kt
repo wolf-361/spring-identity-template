@@ -10,9 +10,8 @@ import java.time.Instant
 abstract class AuditableEntity(
     @Column(name = "created_at", nullable = false, updatable = false)
     var createdAt: Instant = Instant.now(),
-
     @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant = Instant.now(),
+    var updatedAt: Instant = Instant.now()
 ) {
     @PrePersist
     fun prePersist() {

@@ -4,5 +4,5 @@ package com.template.identity.application.command
 // stays free of any infrastructure dependency for configuration.
 data class ForgotPasswordCommand(
     val email: String,
-    val frontendUrl: String,
+    val frontendUrl: String
 )

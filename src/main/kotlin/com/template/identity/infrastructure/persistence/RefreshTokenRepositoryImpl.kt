@@ -9,18 +9,15 @@ import java.util.UUID
 
 @Repository
 class RefreshTokenRepositoryImpl(
-    private val jpa: JpaRefreshTokenRepository,
+    private val jpa: JpaRefreshTokenRepository
 ) : RefreshTokenRepository {
-
-    override fun findByTokenHash(tokenHash: String): RefreshToken? =
-        jpa.findByTokenHash(tokenHash)
+    override fun findByTokenHash(tokenHash: String): RefreshToken? = jpa.findByTokenHash(tokenHash)
 
     override fun save(token: RefreshToken): RefreshToken = jpa.save(token)
 
     override fun revoke(tokenId: UUID) = jpa.revokeById(tokenId, Instant.now())
 
-    override fun revokeAllByFamilyId(familyId: UUID) =
-        jpa.revokeAllByFamilyId(familyId, Instant.now())
+    override fun revokeAllByFamilyId(familyId: UUID) = jpa.revokeAllByFamilyId(familyId, Instant.now())
 
     override fun deleteExpired() = jpa.deleteExpired(Instant.now())
 }

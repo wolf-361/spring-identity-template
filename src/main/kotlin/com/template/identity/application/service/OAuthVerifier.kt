@@ -9,7 +9,6 @@ import com.template.identity.domain.model.OAuthProvider
  * which dispatches to provider-specific verifiers.
  */
 interface OAuthVerifier {
-
     /**
      * Verifies [idToken] with the given [provider] and returns the user's identity.
      *
@@ -17,5 +16,8 @@ interface OAuthVerifier {
      *   if no verifier is registered for [provider].
      * @throws RuntimeException if the token is invalid, expired, or fails provider-side verification.
      */
-    fun verify(provider: OAuthProvider, idToken: String): OAuthUserInfo
+    fun verify(
+        provider: OAuthProvider,
+        idToken: String
+    ): OAuthUserInfo
 }

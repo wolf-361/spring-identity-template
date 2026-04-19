@@ -6,5 +6,5 @@ import jakarta.validation.constraints.NotBlank
 data class LogoutRequest(
     @field:NotBlank
     @field:Schema(description = "Refresh token to revoke")
-    val refreshToken: String,
+    val refreshToken: String
 )
