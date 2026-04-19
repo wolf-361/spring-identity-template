@@ -15,7 +15,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class RegisterUserUseCaseTest {
-
     private val userRepository: UserRepository = mockk()
     private val passwordEncoder: PasswordEncoder = mockk()
     private val tokenPairIssuer: TokenPairIssuer = mockk()
@@ -24,12 +23,13 @@ class RegisterUserUseCaseTest {
     @Test
     fun `should create user and return authentication result when email is available`() {
         // Arrange
-        val command = RegisterUserCommand(
-            email = "new@example.com",
-            password = "password123",
-            firstName = "Jane",
-            lastName = "Doe",
-        )
+        val command =
+            RegisterUserCommand(
+                email = "new@example.com",
+                password = "password123",
+                firstName = "Jane",
+                lastName = "Doe"
+            )
         every { userRepository.existsByEmail(command.email) } returns false
         every { passwordEncoder.encode(command.password) } returns "hashed-password"
         every { userRepository.save(any()) } answers { firstArg() }
@@ -48,12 +48,13 @@ class RegisterUserUseCaseTest {
     @Test
     fun `should throw EmailAlreadyExists when email is already registered`() {
         // Arrange
-        val command = RegisterUserCommand(
-            email = "taken@example.com",
-            password = "password123",
-            firstName = "Jane",
-            lastName = "Doe",
-        )
+        val command =
+            RegisterUserCommand(
+                email = "taken@example.com",
+                password = "password123",
+                firstName = "Jane",
+                lastName = "Doe"
+            )
         every { userRepository.existsByEmail(command.email) } returns true
 
         // Act & Assert

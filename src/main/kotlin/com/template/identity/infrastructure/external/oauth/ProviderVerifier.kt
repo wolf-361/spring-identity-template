@@ -5,5 +5,6 @@ import com.template.identity.domain.model.OAuthProvider
 
 interface ProviderVerifier {
     val provider: OAuthProvider
+
     fun verify(idToken: String): OAuthUserInfo
 }

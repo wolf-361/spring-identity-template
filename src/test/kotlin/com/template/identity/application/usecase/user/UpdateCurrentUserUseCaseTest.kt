@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class UpdateCurrentUserUseCaseTest {
-
     private val userRepository: UserRepository = mockk()
     private val useCase = UpdateCurrentUserUseCase(userRepository)
 

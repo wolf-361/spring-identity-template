@@ -1,7 +1,12 @@
 package com.template.identity.domain.model
 
 import com.template.identity.domain.exception.DomainException
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import java.util.UUID
 
 @Entity
@@ -10,24 +15,18 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
-
     @Column(nullable = false, unique = true)
     var email: String,
-
     /** Null for OAuth-only accounts that have never set a password. */
     @Column
     var password: String? = null,
-
     @Column(name = "first_name", nullable = false)
     var firstName: String,
-
     @Column(name = "last_name", nullable = false)
     var lastName: String,
-
     @Column(name = "is_active", nullable = false)
-    var isActive: Boolean = true,
+    var isActive: Boolean = true
 ) : AuditableEntity() {
-
     /** Returns true if the user can authenticate with a password (not OAuth-only). */
     fun hasPassword(): Boolean = password != null
 

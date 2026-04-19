@@ -7,10 +7,8 @@ import java.util.UUID
 data class PublicUserResponse(
     @field:Schema(description = "User unique identifier")
     val id: UUID,
-
     @field:Schema(description = "First name", example = "Jane")
     val firstName: String,
-
     @field:Schema(description = "Last name", example = "Doe")
-    val lastName: String,
+    val lastName: String
 )

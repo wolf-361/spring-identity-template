@@ -13,9 +13,8 @@ import org.springframework.web.client.body
 
 @Service
 class MicrosoftOAuthVerifier(
-    private val appProperties: AppProperties,
+    private val appProperties: AppProperties
 ) : ProviderVerifier {
-
     override val provider = OAuthProvider.MICROSOFT
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -26,16 +25,18 @@ class MicrosoftOAuthVerifier(
     // tenantId defaults to "common" (personal + work accounts). Set to your Azure tenant ID to restrict to one org.
     override fun verify(idToken: String): OAuthUserInfo {
         val tenantId = appProperties.microsoft.tenantId
-        val claims = try {
-            restClient.get()
-                .uri("${appProperties.microsoft.userInfoUrl}/$tenantId/v2.0/userinfo")
-                .header("Authorization", "Bearer $idToken")
-                .retrieve()
-                .body<MicrosoftUserClaims>()
-        } catch (e: Exception) {
-            log.warn("Microsoft token verification request failed: ${e.javaClass.simpleName}")
-            throw RuntimeException("Microsoft token verification failed", e)
-        } ?: throw RuntimeException("Empty response from Microsoft userinfo")
+        val claims =
+            try {
+                restClient
+                    .get()
+                    .uri("${appProperties.microsoft.userInfoUrl}/$tenantId/v2.0/userinfo")
+                    .header("Authorization", "Bearer $idToken")
+                    .retrieve()
+                    .body<MicrosoftUserClaims>()
+            } catch (e: Exception) {
+                log.warn("Microsoft token verification request failed: ${e.javaClass.simpleName}")
+                throw RuntimeException("Microsoft token verification failed", e)
+            } ?: throw RuntimeException("Empty response from Microsoft userinfo")
 
         val clientId = appProperties.microsoft.clientId
         if (clientId.isNotBlank() && claims.aud != clientId) {
@@ -47,7 +48,7 @@ class MicrosoftOAuthVerifier(
             providerUserId = claims.sub,
             email = claims.email,
             firstName = claims.givenName.ifBlank { claims.email.substringBefore("@") },
-            lastName = claims.familyName,
+            lastName = claims.familyName
         )
     }
 
@@ -59,6 +60,6 @@ class MicrosoftOAuthVerifier(
         val givenName: String = "",
         @field:JsonProperty("family_name")
         val familyName: String = "",
-        val aud: String = "",
+        val aud: String = ""
     )
 }

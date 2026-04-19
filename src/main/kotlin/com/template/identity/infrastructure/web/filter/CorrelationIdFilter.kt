@@ -12,14 +12,14 @@ import java.util.UUID
 @Component
 @Order(1)
 class CorrelationIdFilter : OncePerRequestFilter() {
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain,
+        filterChain: FilterChain
     ) {
-        val correlationId = request.getHeader("X-Correlation-Id")?.takeIf { it.isNotBlank() }
-            ?: UUID.randomUUID().toString()
+        val correlationId =
+            request.getHeader("X-Correlation-Id")?.takeIf { it.isNotBlank() }
+                ?: UUID.randomUUID().toString()
 
         MDC.put("correlationId", correlationId)
         response.setHeader("X-Correlation-Id", correlationId)

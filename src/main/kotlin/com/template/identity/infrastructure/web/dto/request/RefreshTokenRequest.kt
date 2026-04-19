@@ -6,5 +6,5 @@ import jakarta.validation.constraints.NotBlank
 data class RefreshTokenRequest(
     @field:NotBlank
     @field:Schema(description = "Opaque refresh token previously issued by this service")
-    val refreshToken: String,
+    val refreshToken: String
 )

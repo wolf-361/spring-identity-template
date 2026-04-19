@@ -15,9 +15,8 @@ import java.security.PublicKey
 
 @Service
 class AppleOAuthVerifier(
-    private val appProperties: AppProperties,
+    private val appProperties: AppProperties
 ) : ProviderVerifier {
-
     override val provider = OAuthProvider.APPLE
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -33,20 +32,22 @@ class AppleOAuthVerifier(
     override fun verify(idToken: String): OAuthUserInfo {
         val keys = fetchApplePublicKeys()
 
-        val claims = keys.firstNotNullOfOrNull { key ->
-            try {
-                Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(idToken)
-                    .payload
-            } catch (_: Exception) {
-                null
+        val claims =
+            keys.firstNotNullOfOrNull { key ->
+                try {
+                    Jwts
+                        .parser()
+                        .verifyWith(key)
+                        .build()
+                        .parseSignedClaims(idToken)
+                        .payload
+                } catch (_: Exception) {
+                    null
+                }
+            } ?: run {
+                log.warn("Apple id_token signature verification failed")
+                throw RuntimeException("Apple token verification failed")
             }
-        } ?: run {
-            log.warn("Apple id_token signature verification failed")
-            throw RuntimeException("Apple token verification failed")
-        }
 
         val clientId = appProperties.apple.clientId
         if (clientId.isNotBlank() && claims.audience?.firstOrNull() != clientId) {
@@ -54,31 +55,38 @@ class AppleOAuthVerifier(
             throw RuntimeException("Apple token audience mismatch")
         }
 
-        val email = claims["email"] as? String
-            ?: throw RuntimeException("No email claim in Apple token")
+        val email =
+            claims["email"] as? String
+                ?: throw RuntimeException("No email claim in Apple token")
 
         return OAuthUserInfo(
             providerUserId = claims.subject,
             email = email,
-            firstName = (claims["given_name"] as? String)?.ifBlank { null }
-                ?: email.substringBefore("@"),
-            lastName = (claims["family_name"] as? String)?.ifBlank { null } ?: "",
+            firstName =
+                (claims["given_name"] as? String)?.ifBlank { null }
+                    ?: email.substringBefore("@"),
+            lastName = (claims["family_name"] as? String)?.ifBlank { null } ?: ""
         )
     }
 
     private fun fetchApplePublicKeys(): List<PublicKey> {
         return try {
-            val jwks = restClient.get()
-                .uri(appProperties.apple.jwksUrl)
-                .retrieve()
-                .body<AppleJwks>()
-                ?: return emptyList()
+            val jwks =
+                restClient
+                    .get()
+                    .uri(appProperties.apple.jwksUrl)
+                    .retrieve()
+                    .body<AppleJwks>()
+                    ?: return emptyList()
 
             jwks.keys.mapNotNull { jwk ->
                 try {
-                    Jwks.parser().build().parse(
-                        """{"kty":"${jwk.kty}","n":"${jwk.n}","e":"${jwk.e}"}"""
-                    ).toKey() as? PublicKey
+                    Jwks
+                        .parser()
+                        .build()
+                        .parse(
+                            """{"kty":"${jwk.kty}","n":"${jwk.n}","e":"${jwk.e}"}"""
+                        ).toKey() as? PublicKey
                 } catch (e: Exception) {
                     log.warn("Failed to parse Apple JWK: ${e.javaClass.simpleName}")
                     null
@@ -91,12 +99,14 @@ class AppleOAuthVerifier(
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private data class AppleJwks(val keys: List<AppleJwk> = emptyList())
+    private data class AppleJwks(
+        val keys: List<AppleJwk> = emptyList()
+    )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class AppleJwk(
         val kty: String,
         val n: String,
-        val e: String,
+        val e: String
     )
 }

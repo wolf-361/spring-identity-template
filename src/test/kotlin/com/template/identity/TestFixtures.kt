@@ -16,14 +16,14 @@ fun buildUser(
     password: String? = "hashed-password",
     firstName: String = "Jane",
     lastName: String = "Doe",
-    isActive: Boolean = true,
+    isActive: Boolean = true
 ) = User(
     id = id,
     email = email,
     password = password,
     firstName = firstName,
     lastName = lastName,
-    isActive = isActive,
+    isActive = isActive
 )
 
 fun buildRefreshToken(
@@ -32,26 +32,26 @@ fun buildRefreshToken(
     tokenHash: String = "token-hash",
     familyId: UUID = UUID.randomUUID(),
     expiresAt: Instant = Instant.now().plusSeconds(86_400),
-    revokedAt: Instant? = null,
+    revokedAt: Instant? = null
 ) = RefreshToken(
     id = id,
     user = user,
     tokenHash = tokenHash,
     familyId = familyId,
     expiresAt = expiresAt,
-    revokedAt = revokedAt,
+    revokedAt = revokedAt
 )
 
 fun buildPasswordResetToken(
     user: User,
     id: UUID = UUID.randomUUID(),
     tokenHash: String = "reset-token-hash",
-    expiresAt: Instant = Instant.now().plusSeconds(3_600),
+    expiresAt: Instant = Instant.now().plusSeconds(3_600)
 ) = PasswordResetToken(
     id = id,
     user = user,
     tokenHash = tokenHash,
-    expiresAt = expiresAt,
+    expiresAt = expiresAt
 )
 
 fun buildOAuthAccount(
@@ -59,29 +59,30 @@ fun buildOAuthAccount(
     id: UUID = UUID.randomUUID(),
     provider: OAuthProvider = OAuthProvider.GOOGLE,
     providerUserId: String = "google-sub-123",
-    providerEmail: String = "user@gmail.com",
+    providerEmail: String = "user@gmail.com"
 ) = OAuthAccount(
     id = id,
     user = user,
     provider = provider,
     providerUserId = providerUserId,
-    providerEmail = providerEmail,
+    providerEmail = providerEmail
 )
 
 fun buildOAuthUserInfo(
     providerUserId: String = "google-sub-123",
     email: String = "user@gmail.com",
     firstName: String = "Jane",
-    lastName: String = "Doe",
+    lastName: String = "Doe"
 ) = OAuthUserInfo(
     providerUserId = providerUserId,
     email = email,
     firstName = firstName,
-    lastName = lastName,
+    lastName = lastName
 )
 
-fun buildAuthResult(user: User) = AuthenticationResult(
-    accessToken = "access-token",
-    refreshToken = "refresh-token",
-    user = user,
-)
+fun buildAuthResult(user: User) =
+    AuthenticationResult(
+        accessToken = "access-token",
+        refreshToken = "refresh-token",
+        user = user
+    )

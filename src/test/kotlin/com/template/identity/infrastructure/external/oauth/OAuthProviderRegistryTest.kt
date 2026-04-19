@@ -1,7 +1,6 @@
 package com.template.identity.infrastructure.external.oauth
 
 import com.template.identity.application.exception.ApplicationException
-import com.template.identity.application.result.OAuthUserInfo
 import com.template.identity.buildOAuthUserInfo
 import com.template.identity.domain.model.OAuthProvider
 import io.kotest.assertions.throwables.shouldThrow
@@ -11,10 +10,10 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
 class OAuthProviderRegistryTest {
-
-    private val googleVerifier: ProviderVerifier = mockk {
-        every { provider } returns OAuthProvider.GOOGLE
-    }
+    private val googleVerifier: ProviderVerifier =
+        mockk {
+            every { provider } returns OAuthProvider.GOOGLE
+        }
 
     @Test
     fun `should dispatch to the correct verifier for the given provider`() {

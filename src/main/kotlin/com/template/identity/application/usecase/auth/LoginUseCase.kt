@@ -1,9 +1,9 @@
 package com.template.identity.application.usecase.auth
 
 import com.template.identity.application.command.LoginCommand
-import com.template.identity.application.result.AuthenticationResult
 import com.template.identity.application.exception.ApplicationException
 import com.template.identity.application.repository.UserRepository
+import com.template.identity.application.result.AuthenticationResult
 import com.template.identity.application.service.PasswordEncoder
 import com.template.identity.application.service.TokenPairIssuer
 import org.springframework.stereotype.Service
@@ -18,11 +18,12 @@ import org.springframework.stereotype.Service
 class LoginUseCase(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val tokenPairIssuer: TokenPairIssuer,
+    private val tokenPairIssuer: TokenPairIssuer
 ) {
     fun execute(command: LoginCommand): AuthenticationResult {
-        val user = userRepository.findByEmail(command.email)
-            ?: throw ApplicationException.InvalidCredentials()
+        val user =
+            userRepository.findByEmail(command.email)
+                ?: throw ApplicationException.InvalidCredentials()
 
         if (!user.isActive) throw ApplicationException.InvalidCredentials()
         if (!user.hasPassword()) throw ApplicationException.InvalidCredentials()

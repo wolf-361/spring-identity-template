@@ -9,12 +9,10 @@ data class UpdateCurrentUserRequest(
     @field:Email
     @field:Schema(description = "New email address — must be unique", example = "new@example.com")
     val email: String? = null,
-
     @field:Size(min = 1, max = 100)
     @field:Schema(description = "New first name", example = "Jane")
     val firstName: String? = null,
-
     @field:Size(min = 1, max = 100)
     @field:Schema(description = "New last name", example = "Doe")
-    val lastName: String? = null,
+    val lastName: String? = null
 )

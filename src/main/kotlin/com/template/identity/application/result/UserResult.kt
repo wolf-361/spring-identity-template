@@ -11,17 +11,18 @@ data class UserResult(
     val lastName: String,
     val isActive: Boolean,
     val createdAt: Instant,
-    val updatedAt: Instant,
+    val updatedAt: Instant
 ) {
     companion object {
-        fun from(user: User) = UserResult(
-            id = user.id!!,
-            email = user.email,
-            firstName = user.firstName,
-            lastName = user.lastName,
-            isActive = user.isActive,
-            createdAt = user.createdAt,
-            updatedAt = user.updatedAt,
-        )
+        fun from(user: User) =
+            UserResult(
+                id = user.id!!,
+                email = user.email,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                isActive = user.isActive,
+                createdAt = user.createdAt,
+                updatedAt = user.updatedAt
+            )
     }
 }

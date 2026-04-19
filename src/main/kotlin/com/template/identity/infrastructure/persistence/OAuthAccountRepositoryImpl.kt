@@ -9,16 +9,17 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class OAuthAccountRepositoryImpl(
-    private val jpa: JpaOAuthAccountRepository,
+    private val jpa: JpaOAuthAccountRepository
 ) : OAuthAccountRepository {
-
     override fun findByProviderAndProviderUserId(
         provider: OAuthProvider,
-        providerUserId: String,
+        providerUserId: String
     ): OAuthAccount? = jpa.findByProviderAndProviderUserId(provider, providerUserId)
 
-    override fun findByUserAndProvider(user: User, provider: OAuthProvider): OAuthAccount? =
-        jpa.findByUserAndProvider(user, provider)
+    override fun findByUserAndProvider(
+        user: User,
+        provider: OAuthProvider
+    ): OAuthAccount? = jpa.findByUserAndProvider(user, provider)
 
     override fun countByUser(user: User): Int = jpa.countByUser(user).toInt()
 

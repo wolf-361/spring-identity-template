@@ -1,8 +1,8 @@
 package com.template.identity.application.usecase.user
 
-import com.template.identity.application.result.PublicUserResult
 import com.template.identity.application.exception.ApplicationException
 import com.template.identity.application.repository.UserRepository
+import com.template.identity.application.result.PublicUserResult
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -14,11 +14,12 @@ import java.util.UUID
  */
 @Service
 class GetPublicUserUseCase(
-    private val userRepository: UserRepository,
+    private val userRepository: UserRepository
 ) {
     fun execute(userId: UUID): PublicUserResult {
-        val user = userRepository.findById(userId)
-            ?: throw ApplicationException.UserNotFound()
+        val user =
+            userRepository.findById(userId)
+                ?: throw ApplicationException.UserNotFound()
         return PublicUserResult.from(user)
     }
 }

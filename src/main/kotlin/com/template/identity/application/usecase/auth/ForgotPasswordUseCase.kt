@@ -22,7 +22,7 @@ import java.time.Instant
 class ForgotPasswordUseCase(
     private val userRepository: UserRepository,
     private val passwordResetTokenRepository: PasswordResetTokenRepository,
-    private val emailSender: EmailSender,
+    private val emailSender: EmailSender
 ) {
     @Transactional
     fun execute(command: ForgotPasswordCommand) {
@@ -35,7 +35,7 @@ class ForgotPasswordUseCase(
             PasswordResetToken(
                 user = user,
                 tokenHash = sha256(rawToken),
-                expiresAt = Instant.now().plusSeconds(3600),
+                expiresAt = Instant.now().plusSeconds(3600)
             )
         )
 

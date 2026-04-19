@@ -5,7 +5,6 @@ import java.util.UUID
 
 /** Persistence contract for [User] entities. */
 interface UserRepository {
-
     /** Returns the user with [id], or null if not found. */
     fun findById(id: UUID): User?
 
