@@ -17,6 +17,11 @@ import java.time.Instant
 class GlobalExceptionHandler {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    private fun sanitizeForLog(value: String?): String =
+        value
+            ?.replace(Regex("[\\r\\n\\t\\u0000-\\u001F\\u007F]"), "_")
+            ?: "null"
+
     @ExceptionHandler(
         ApplicationException.InvalidCredentials::class,
         ApplicationException.UserInactive::class
@@ -25,14 +30,26 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid credentials")
-        .also { log.warn("Authentication failed [${req.requestURI}]: ${ex.message}") }
+        .also {
+            log.warn(
+                "Authentication failed [{}]: {}",
+                sanitizeForLog(req.requestURI),
+                sanitizeForLog(ex.message)
+            )
+        }
 
     @ExceptionHandler(ApplicationException.EmailAlreadyExists::class)
     fun handleEmailAlreadyExists(
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.CONFLICT, "REGISTRATION_FAILED", "Unable to create account")
-        .also { log.warn("Registration failed [${req.requestURI}]: ${ex.message}") }
+        .also {
+            log.warn(
+                "Registration failed [{}]: {}",
+                sanitizeForLog(req.requestURI),
+                sanitizeForLog(ex.message)
+            )
+        }
 
     @ExceptionHandler(
         ApplicationException.RefreshTokenExpired::class,
@@ -43,7 +60,13 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.UNAUTHORIZED, "SESSION_EXPIRED", "Session expired, please login again")
-        .also { log.warn("Refresh token error [${req.requestURI}]: ${ex.message}") }
+        .also {
+            log.warn(
+                "Refresh token error [{}]: {}",
+                sanitizeForLog(req.requestURI),
+                sanitizeForLog(ex.message)
+            )
+        }
 
     @ExceptionHandler(
         ApplicationException.PasswordResetTokenInvalid::class,
@@ -53,7 +76,13 @@ class GlobalExceptionHandler {
         ex: ApplicationException,
         req: HttpServletRequest
     ) = error(HttpStatus.BAD_REQUEST, "INVALID_RESET_TOKEN", "Invalid or expired password reset link")
-        .also { log.warn("Password reset token error [${req.requestURI}]: ${ex.message}") }
+        .also {
+            log.warn(
+                "Password reset token error [{}]: {}",
+                sanitizeForLog(req.requestURI),
+                sanitizeForLog(ex.message)
+            )
+        }
 
     @ExceptionHandler(ApplicationException.UserNotFound::class)
     fun handleUserNotFound(
