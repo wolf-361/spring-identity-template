@@ -2,7 +2,10 @@ package com.template.identity.domain.model
 
 /** Supported OAuth providers. Add a new entry here and implement a matching verifier in infrastructure. */
 enum class OAuthProvider {
-    GOOGLE;
+    GOOGLE,
+    GITHUB,
+    APPLE,
+    MICROSOFT;
 
     companion object {
         /**

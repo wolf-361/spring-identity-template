@@ -1,4 +1,4 @@
-package com.template.identity.infrastructure.external.oauth.google
+package com.template.identity.infrastructure.external.oauth.microsoft
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -12,30 +12,35 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
 @Service
-class GoogleOAuthVerifier(
+class MicrosoftOAuthVerifier(
     private val appProperties: AppProperties,
 ) : ProviderVerifier {
 
-    override val provider = OAuthProvider.GOOGLE
+    override val provider = OAuthProvider.MICROSOFT
 
     private val log = LoggerFactory.getLogger(javaClass)
     private val restClient = RestClient.create()
 
+    // Microsoft uses OIDC — the frontend gets an id_token and sends it here.
+    // We call the userinfo endpoint with the token as Bearer to get user claims.
+    // tenantId defaults to "common" (personal + work accounts). Set to your Azure tenant ID to restrict to one org.
     override fun verify(idToken: String): OAuthUserInfo {
+        val tenantId = appProperties.microsoft.tenantId
         val claims = try {
             restClient.get()
-                .uri("${appProperties.google.tokenInfoUrl}?id_token={token}", idToken)
+                .uri("${appProperties.microsoft.userInfoUrl}/$tenantId/v2.0/userinfo")
+                .header("Authorization", "Bearer $idToken")
                 .retrieve()
-                .body<GoogleTokenClaims>()
+                .body<MicrosoftUserClaims>()
         } catch (e: Exception) {
-            log.warn("Google token verification request failed: ${e.javaClass.simpleName}")
-            throw RuntimeException("Google token verification failed", e)
-        } ?: throw RuntimeException("Empty response from Google tokeninfo")
+            log.warn("Microsoft token verification request failed: ${e.javaClass.simpleName}")
+            throw RuntimeException("Microsoft token verification failed", e)
+        } ?: throw RuntimeException("Empty response from Microsoft userinfo")
 
-        val clientId = appProperties.google.clientId
+        val clientId = appProperties.microsoft.clientId
         if (clientId.isNotBlank() && claims.aud != clientId) {
-            log.warn("Google token audience mismatch — expected $clientId")
-            throw RuntimeException("Google token audience mismatch")
+            log.warn("Microsoft token audience mismatch — expected $clientId")
+            throw RuntimeException("Microsoft token audience mismatch")
         }
 
         return OAuthUserInfo(
@@ -47,13 +52,13 @@ class GoogleOAuthVerifier(
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private data class GoogleTokenClaims(
+    private data class MicrosoftUserClaims(
         val sub: String,
         val email: String,
         @field:JsonProperty("given_name")
         val givenName: String = "",
         @field:JsonProperty("family_name")
         val familyName: String = "",
-        val aud: String,
+        val aud: String = "",
     )
 }
