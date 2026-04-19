@@ -110,7 +110,7 @@ class GlobalExceptionHandler {
         ex: DomainException,
         req: HttpServletRequest
     ) = error(HttpStatus.UNPROCESSABLE_ENTITY, "LAST_AUTH_METHOD", "Cannot remove the last authentication method")
-        .also { log.warn("Last auth method removal attempt [${req.requestURI}]") }
+        .also { log.warn("Last auth method removal attempt [{}]", sanitizeForLog(req.requestURI)) }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidation(ex: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
@@ -148,4 +148,8 @@ class GlobalExceptionHandler {
             correlationId = MDC.get("correlationId")
         )
     )
+    private fun sanitizeForLog(input: String?): String {
+        if (input == null) return ""
+        return input.replace(Regex("[\\r\\n\\t\\u0000-\\u001F\\u007F]"), "_")
+    }
 }
