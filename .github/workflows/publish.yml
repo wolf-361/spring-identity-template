@@ -1,0 +1,135 @@
+name: Docker Build and Publish
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [ "main" ]
+  #   tags: [ "v*.*.*" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build jar
+        run: ./gradlew bootJar --no-daemon
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+            type=raw,value=latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  create-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ publish ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Tag Name
+        id: get_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          make_latest: true
+          body: |
+            **Docker Image Available**
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ steps.get_tag.outputs.TAG_NAME }}
+            ```
+
+  # ── Optional: update README badges after publish ─────────────────────────
+  # Opt-in: uncomment this job and add BOT_APP_ID + BOT_PRIVATE_KEY secrets.
+  # Requires badge placeholders in README.md:
+  #   ![Java](https://img.shields.io/badge/Java-25-ED8B00)
+  #   ![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-7F52FF)
+  #   ![version](https://img.shields.io/badge/version-v0.0.0-orange)
+  #
+  # update-readme:
+  #   needs: [ publish ]
+  #   if: github.event_name != 'pull_request'
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - name: Generate Bot Token
+  #       id: generate-token
+  #       uses: actions/create-github-app-token@v1
+  #       with:
+  #         app-id: ${{ secrets.BOT_APP_ID }}
+  #         private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+  #
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         token: ${{ steps.generate-token.outputs.token }}
+  #         persist-credentials: false
+  #         fetch-depth: 0
+  #
+  #     - name: Calculate Metrics
+  #       id: metrics
+  #       run: |
+  #         JAVA_VER=$(grep 'java-version' .github/workflows/publish.yml | head -1 | grep -oP "'\K[^']+")
+  #         KOTLIN_VER=$(grep '^kotlin = ' gradle/libs.versions.toml | grep -oP '"[^"]+"' | tr -d '"')
+  #         if [[ $GITHUB_REF == refs/tags/* ]]; then
+  #           REL_VER=${GITHUB_REF#refs/tags/}
+  #         else
+  #           REL_VER=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+  #         fi
+  #         echo "java_version=$JAVA_VER" >> $GITHUB_OUTPUT
+  #         echo "kotlin_version=$KOTLIN_VER" >> $GITHUB_OUTPUT
+  #         echo "release_version=$REL_VER" >> $GITHUB_OUTPUT
+  #
+  #     - name: Update README Badges
+  #       run: |
+  #         sed -i "s/Java-.*-ED8B00/Java-${{ steps.metrics.outputs.java_version }}-ED8B00/" README.md
+  #         sed -i "s/Kotlin-.*-7F52FF/Kotlin-${{ steps.metrics.outputs.kotlin_version }}-7F52FF/" README.md
+  #         sed -i "s/version-.*-orange/version-${{ steps.metrics.outputs.release_version }}-orange/" README.md
+  #
+  #     - name: Commit and Push
+  #       run: |
+  #         git config --global user.name "github-actions[bot]"
+  #         git config --global user.email "github-actions[bot]@users.noreply.github.com"
+  #         git add README.md
+  #         if ! git diff --staged --quiet; then
+  #           git commit -m "docs: automate badge updates [skip ci]"
+  #           git remote set-url origin https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/${{ github.repository }}.git
+  #           git push origin HEAD:main
+  #         fi
