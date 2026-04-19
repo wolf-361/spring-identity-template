@@ -138,7 +138,7 @@ class GlobalExceptionHandler {
         ex: Exception,
         req: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        log.error("Unexpected error [${req.requestURI}]", ex)
+        log.error("Unexpected error [{}]", sanitizeForLog(req.requestURI), ex)
         return error(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "An unexpected error occurred")
     }
 
@@ -154,9 +154,4 @@ class GlobalExceptionHandler {
             correlationId = MDC.get("correlationId")
         )
     )
-
-    private fun sanitizeForLog(input: String?): String {
-        if (input == null) return ""
-        return input.replace(Regex("[\\r\\n\\t\\u0000-\\u001F\\u007F]"), "_")
-    }
 }
