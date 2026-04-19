@@ -9,8 +9,8 @@ flyway = "12.4.0"
 micrometer-prometheus = "1.15.0"
 springdoc = "3.0.3"
 logstash-logback = "8.0"
-mockk = "1.13.12"
-kotest = "5.9.1"
+mockk = "1.14.9"
+kotest = "6.1.11"
 
 [libraries]
 # Spring Boot starters (version managed by BOM)
