@@ -41,32 +41,54 @@ fi
 echo ""
 echo "→ Renaming package references..."
 
-# Rename in all source files
-find src -type f \( -name "*.kt" -o -name "*.xml" -o -name "*.yml" -o -name "*.yaml" -o -name "*.properties" \) \
-  -exec sed -i "s|${TEMPLATE_PACKAGE}|${PACKAGE}|g" {} +
+# Clean variables of any hidden carriage returns (common on some terminals)
+TEMPLATE_PACKAGE=$(echo "$TEMPLATE_PACKAGE" | tr -d '\r')
+PACKAGE=$(echo "$PACKAGE" | tr -d '\r')
+TEMPLATE_GROUP=$(echo "$TEMPLATE_GROUP" | tr -d '\r')
+GROUP=$(echo "$GROUP" | tr -d '\r')
+TEMPLATE_PROJECT=$(echo "$TEMPLATE_PROJECT" | tr -d '\r')
+ARTIFACT=$(echo "$ARTIFACT" | tr -d '\r')
 
-# Rename in build files
-sed -i "s|${TEMPLATE_GROUP}|${GROUP}|g" build.gradle.kts
-sed -i "s|\"${TEMPLATE_PROJECT}\"|\"${ARTIFACT}\"|g" settings.gradle.kts
+# Rename in source files
+find src -type f \( -name "*.kt" -o -name "*.xml" -o -name "*.yml" -o -name "*.yaml" -o -name "*.properties" \) | while read -r file; do
+    sed -i '' "s|${TEMPLATE_PACKAGE}|${PACKAGE}|g" "$file"
+done
+
+# Rename in build and documentation files explicitly
+sed -i '' "s|${TEMPLATE_GROUP}|${GROUP}|g" "build.gradle.kts"
+sed -i '' "s|\"${TEMPLATE_PROJECT}\"|\"${ARTIFACT}\"|g" "settings.gradle.kts"
+sed -i '' "s|your-org/spring-identity-template|${GITHUB_OWNER}/${GITHUB_REPO}|g" "README.md"
 
 echo "→ Moving source directories..."
 
+# Define paths
 TEMPLATE_PATH="src/main/kotlin/$(echo "$TEMPLATE_PACKAGE" | tr '.' '/')"
 TARGET_PATH="src/main/kotlin/$(echo "$PACKAGE" | tr '.' '/')"
 TEST_TEMPLATE_PATH="src/test/kotlin/$(echo "$TEMPLATE_PACKAGE" | tr '.' '/')"
 TEST_TARGET_PATH="src/test/kotlin/$(echo "$PACKAGE" | tr '.' '/')"
 
-mkdir -p "$(dirname "$TARGET_PATH")"
-mv "$TEMPLATE_PATH" "$TARGET_PATH"
+# Move Main Sources
+if [ -d "$TEMPLATE_PATH" ]; then
+    mkdir -p "$(dirname "$TARGET_PATH")"
+    # If target exists, remove it first to avoid nesting folders
+    [ -d "$TARGET_PATH" ] && rm -rf "$TARGET_PATH"
+    mv "$TEMPLATE_PATH" "$TARGET_PATH"
+else
+    echo "⚠️  Warning: Source path $TEMPLATE_PATH not found. Already moved?"
+fi
 
-mkdir -p "$(dirname "$TEST_TARGET_PATH")"
-mv "$TEST_TEMPLATE_PATH" "$TEST_TARGET_PATH"
+# Move Test Sources
+if [ -d "$TEST_TEMPLATE_PATH" ]; then
+    mkdir -p "$(dirname "$TEST_TARGET_PATH")"
+    [ -d "$TEST_TARGET_PATH" ] && rm -rf "$TEST_TARGET_PATH"
+    mv "$TEST_TEMPLATE_PATH" "$TEST_TARGET_PATH"
+fi
 
-# Clean up empty parent dirs left behind
-find src -type d -empty -delete
+# Clean up empty parent dirs (like com/template)
+find src/main/kotlin src/test/kotlin -type d -empty -delete 2>/dev/null || true
 
 echo "→ Updating README badges..."
-sed -i "s|your-org/spring-identity-template|${GITHUB_OWNER}/${GITHUB_REPO}|g" README.md
+sed -i '' "s|your-org/spring-identity-template|${GITHUB_OWNER}/${GITHUB_REPO}|g" "README.md"
 
 echo "→ Removing template-only files..."
 rm -f .github/workflows/update-badges.yml
@@ -87,8 +109,6 @@ if [[ ! "$INSTALL_HOOK" =~ ^[Nn]$ ]]; then
   echo "→ Installing ktlint pre-commit hook..."
   ./gradlew addKtlintCheckGitPreCommitHook --no-daemon
 
-  # Overwrite with an upgraded version that auto-formats before checking,
-  # so commits aren't blocked by violations ktlint can fix itself.
   cat > .git/hooks/pre-commit << 'EOF'
 #!/bin/sh
 ######## KTLINT-GRADLE HOOK START ########
