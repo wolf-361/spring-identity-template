@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:identity}
     username: ${DB_USER:identity}
-    password: ${DB_PASSWORD:identity}
+    password: ${DB_PASSWORD:changeme}
     driver-class-name: org.postgresql.Driver
 
   jpa:
