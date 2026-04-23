@@ -5,6 +5,7 @@ import com.template.identity.infrastructure.security.jwt.JwtAuthenticationFilter
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -13,12 +14,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import kotlin.collections.contains
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val appProperties: AppProperties
+    private val appProperties: AppProperties,
+    private val environment: Environment
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -30,12 +33,18 @@ class SecurityConfig(
                 auth
                     .requestMatchers(
                         "/auth/**",
-                        "/users/*/public",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/v3/api-docs/**",
-                        "/error"
+                        "/users/*/public"
                     ).permitAll()
+                if (environment.activeProfiles.contains("dev")) {
+                    auth
+                        .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/docs/**",
+                            "/error"
+                        ).permitAll()
+                }
                 auth.anyRequest().authenticated()
             }.exceptionHandling { ex ->
                 ex.authenticationEntryPoint { _, response, _ ->

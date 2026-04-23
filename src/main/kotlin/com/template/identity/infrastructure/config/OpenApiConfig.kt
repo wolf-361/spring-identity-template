@@ -19,7 +19,7 @@ class OpenApiConfig {
                     .version("1.0")
                     .description(
                         "Authentication, authorization, and user management.\n\n" +
-                            "Endpoints under `/auth/**` are public. All others require a Bearer JWT."
+                            "Endpoints under `/auth/**` are public. All others require a Bearer JWT except for the public profile"
                     )
             ).addSecurityItem(SecurityRequirement().addList("bearerAuth"))
             .components(
