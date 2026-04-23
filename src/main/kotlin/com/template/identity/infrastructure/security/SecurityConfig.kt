@@ -25,26 +25,19 @@ class SecurityConfig(
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .cors { it.configurationSource(corsConfigurationSource()) }
-            .csrf { it.disable() }
+        http.cors { it.configurationSource(corsConfigurationSource()) }.csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
-                auth
-                    .requestMatchers(
-                        "/auth/**",
-                        "/users/*/public"
+                auth.requestMatchers("/actuator/**").permitAll()
+                auth.requestMatchers(
+                        "/auth/**", "/users/*/public"
                     ).permitAll()
                 if (environment.activeProfiles.contains("dev")) {
-                    auth
-                        .requestMatchers(
-                            "/v3/api-docs/**",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",
-                            "/docs/**",
-                            "/error"
+                    auth.requestMatchers(
+                            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/docs/**", "/error"
                         ).permitAll()
                 }
+                auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 auth.anyRequest().authenticated()
             }.exceptionHandling { ex ->
                 ex.authenticationEntryPoint { _, response, _ ->
