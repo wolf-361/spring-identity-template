@@ -4,7 +4,7 @@ spring-dependency-management = "1.1.7"
 kotlin = "2.2.21"
 ktlint-plugin = "14.2.0"
 
-jjwt = "0.12.6"
+jjwt = "0.13.0"
 flyway = "12.4.0"
 micrometer-prometheus = "1.16.5"
 springdoc = "3.0.3"
