@@ -9,6 +9,7 @@ flyway = "12.4.0"
 micrometer-prometheus = "1.16.5"
 springdoc = "3.0.3"
 logstash-logback = "8.0"
+loki-logback = "1.5.2"
 mockk = "1.14.9"
 kotest = "6.1.11"
 wiremock = "3.9.2"
@@ -48,6 +49,7 @@ springdoc-webmvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui
 
 # Logging
 logstash-logback = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback" }
+loki-logback = { module = "com.github.loki4j:loki-logback-appender", version.ref = "loki-logback" }
 
 # Test
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }

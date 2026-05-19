@@ -14,8 +14,12 @@
     </root>
   </springProfile>
 
-  <!-- Prod: JSON via logstash encoder -->
+  <!-- Prod: JSON to stdout + push to Loki -->
   <springProfile name="prod">
+    <springProperty name="lokiUrl" source="loki.url" defaultValue="http://localhost:3100"/>
+    <springProperty name="appName" source="spring.application.name" defaultValue="identity-service"/>
+
+    <!-- Stdout: structured JSON for container log collection -->
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
       <encoder class="net.logstash.logback.encoder.LogstashEncoder">
         <includeMdcKeyName>correlationId</includeMdcKeyName>
@@ -25,8 +29,38 @@
       </encoder>
     </appender>
 
+    <!-- Loki: push logs directly to the aggregator -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+      <http>
+        <url>${lokiUrl}/loki/api/v1/push</url>
+      </http>
+      <format>
+        <label>
+          <pattern>app=${appName},level=%level,host=${HOSTNAME:-localhost}</pattern>
+        </label>
+        <message>
+          <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>correlationId</includeMdcKeyName>
+            <includeMdcKeyName>userId</includeMdcKeyName>
+            <includeMdcKeyName>path</includeMdcKeyName>
+            <includeMdcKeyName>method</includeMdcKeyName>
+          </encoder>
+        </message>
+      </format>
+    </appender>
+
+    <!-- Wrap Loki in async to avoid blocking request threads on network I/O -->
+    <appender name="ASYNC_LOKI" class="ch.qos.logback.classic.AsyncAppender">
+      <appender-ref ref="LOKI"/>
+      <queueSize>10000</queueSize>
+      <!-- 0 = never discard; default 20% drops TRACE/DEBUG/INFO when queue fills -->
+      <discardingThreshold>0</discardingThreshold>
+      <neverBlock>true</neverBlock>
+    </appender>
+
     <root level="INFO">
       <appender-ref ref="JSON_CONSOLE"/>
+      <appender-ref ref="ASYNC_LOKI"/>
     </root>
   </springProfile>
 

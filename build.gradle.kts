@@ -51,6 +51,7 @@ dependencies {
 
     // Logging
     implementation(libs.logstash.logback)
+    implementation(libs.loki.logback)
 
     // Test
     testImplementation(libs.spring.boot.test) {
