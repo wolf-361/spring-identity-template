@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.ktlint)
+    jacoco
 }
 
 group = "com.template"
@@ -77,6 +78,59 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            excludes =
+                listOf(
+                    "*.dto.*",
+                    "*.config.*",
+                    "*.exception.*",
+                    "*.seed.*",
+                    "*.mapper.*",
+                    "*Application*",
+                    "**/generated/**"
+                )
+            limit {
+                counter = "LINE"
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+        rule {
+            excludes =
+                listOf(
+                    "*.dto.*",
+                    "*.config.*",
+                    "*.exception.*",
+                    "*.seed.*",
+                    "*.mapper.*",
+                    "*Application*",
+                    "**/generated/**"
+                )
+            limit {
+                counter = "BRANCH"
+                minimum = "0.70".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
 
 ktlint {
