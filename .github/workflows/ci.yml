@@ -3,6 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -10,6 +12,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -22,3 +27,40 @@ jobs:
 
       - name: Build and test
         run: ./gradlew ktlintCheck test --no-daemon
+
+      - name: Post coverage comment
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: '**/build/reports/jacoco/test/jacocoTestReport.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
+          title: Code Coverage
+          update-comment: true
+
+      - name: Write coverage summary
+        run: |
+          XML_FILE=$(find . -name "jacocoTestReport.xml" -path "*/jacoco/test/*" | head -1)
+          if [ -z "$XML_FILE" ]; then
+            echo "No JaCoCo coverage report found." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          LINE_MISSED=$(grep -oP 'type="LINE" missed="\K[0-9]+' "$XML_FILE" | tail -1)
+          LINE_COVERED=$(grep -oP 'type="LINE" missed="[0-9]+" covered="\K[0-9]+' "$XML_FILE" | tail -1)
+          BRANCH_MISSED=$(grep -oP 'type="BRANCH" missed="\K[0-9]+' "$XML_FILE" | tail -1)
+          BRANCH_COVERED=$(grep -oP 'type="BRANCH" missed="[0-9]+" covered="\K[0-9]+' "$XML_FILE" | tail -1)
+          LINE_TOTAL=$((LINE_MISSED + LINE_COVERED))
+          BRANCH_TOTAL=$((BRANCH_MISSED + BRANCH_COVERED))
+          if [ "$LINE_TOTAL" -eq 0 ]; then LINE_PCT="0.0"; else LINE_PCT=$(awk "BEGIN { printf \"%.1f\", ($LINE_COVERED / $LINE_TOTAL) * 100 }"); fi
+          if [ "$BRANCH_TOTAL" -eq 0 ]; then BRANCH_PCT="0.0"; else BRANCH_PCT=$(awk "BEGIN { printf \"%.1f\", ($BRANCH_COVERED / $BRANCH_TOTAL) * 100 }"); fi
+          LINE_ICON=$(awk "BEGIN { print ($LINE_PCT >= 80) ? \"PASS\" : \"FAIL\" }")
+          BRANCH_ICON=$(awk "BEGIN { print ($BRANCH_PCT >= 70) ? \"PASS\" : \"FAIL\" }")
+          {
+            echo "## Code Coverage"
+            echo ""
+            echo "| Metric | Coverage | Threshold | Status |"
+            echo "|--------|----------|-----------|--------|"
+            echo "| Line   | ${LINE_PCT}% | 80% | ${LINE_ICON} |"
+            echo "| Branch | ${BRANCH_PCT}% | 70% | ${BRANCH_ICON} |"
+          } >> "$GITHUB_STEP_SUMMARY"
