@@ -1,29 +1,49 @@
 changelog:
   exclude:
-    labels: [ skip-changelog ]
-    authors: [ github-actions[bot] ]
+    labels:
+      - "skip-changelog"
+    authors:
+      - "github-actions[bot]"
   categories:
     - title: "Features"
-      labels: [ feature ]
-      commit_prefixes: [ "feat" ]
+      labels:
+        - "feature"
+      commit_prefixes:
+        - "feat"
     - title: "Bug Fixes"
-      labels: [ bug ]
-      commit_prefixes: [ "fix" ]
+      labels:
+        - "bug"
+      commit_prefixes:
+        - "fix"
     - title: "Security"
-      labels: [ security ]
-      commit_prefixes: [ "sec" ]
-    - title: "Performance"
-      labels: [ performance ]
-      commit_prefixes: [ "perf" ]
+      labels:
+        - "security"
+      commit_prefixes:
+        - "sec"
+    - title: "⚡ Performance"
+      labels:
+        - "performance"
+      commit_prefixes:
+        - "perf"
     - title: "Refactoring"
-      labels: [ refactor ]
-      commit_prefixes: [ "refactor" ]
+      labels:
+        - "refactor"
+      commit_prefixes:
+        - "refactor"
     - title: "Tests"
-      labels: [ test ]
-      commit_prefixes: [ "test" ]
+      labels:
+        - "test"
+      commit_prefixes:
+        - "test"
     - title: "Maintenance"
-      labels: [ chore ]
-      commit_prefixes: [ "chore", "ci", "build" ]
+      labels:
+        - "chore"
+      commit_prefixes:
+        - "chore"
+        - "ci"
+        - "build"
     - title: "Documentation"
-      labels: [ documentation ]
-      commit_prefixes: [ "docs" ]
+      labels:
+        - "documentation"
+      commit_prefixes:
+        - "docs"

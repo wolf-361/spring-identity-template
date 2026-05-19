@@ -60,19 +60,23 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      packages: read
+      actions: read 
     steps:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/${{ github.repository }}:latest
-          format: sarif
-          output: trivy-results.sarif
-          severity: CRITICAL,HIGH
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-results.sarif
+          # Print a readable table to the GitHub Actions log instead of a SARIF file
+          format: 'table'
+          # Only show vulnerabilities that actually have a published fix
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+          # Break the build if a CRITICAL vulnerability is found
+          exit-code: '1'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
   create-release:
     if: startsWith(github.ref, 'refs/tags/v')
