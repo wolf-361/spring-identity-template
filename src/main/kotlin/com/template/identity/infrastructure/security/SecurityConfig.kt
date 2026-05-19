@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -14,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import kotlin.collections.contains
 
 @Configuration
 @EnableWebSecurity
@@ -25,16 +25,25 @@ class SecurityConfig(
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.cors { it.configurationSource(corsConfigurationSource()) }.csrf { it.disable() }
+        http
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/actuator/**").permitAll()
-                auth.requestMatchers(
-                        "/auth/**", "/users/*/public"
+                auth
+                    .requestMatchers(
+                        "/auth/**",
+                        "/users/*/public"
                     ).permitAll()
                 if (environment.activeProfiles.contains("dev")) {
-                    auth.requestMatchers(
-                            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/docs/**", "/error"
+                    auth
+                        .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html",
+                            "/docs/**",
+                            "/error"
                         ).permitAll()
                 }
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
