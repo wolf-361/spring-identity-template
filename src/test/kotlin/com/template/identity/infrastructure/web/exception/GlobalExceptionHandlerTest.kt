@@ -5,7 +5,6 @@ import com.template.identity.domain.exception.DomainException
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
@@ -14,89 +13,80 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 
 class GlobalExceptionHandlerTest {
     private val handler = GlobalExceptionHandler()
-    private val request = mockk<HttpServletRequest>(relaxed = true)
 
     @Test
     fun `InvalidCredentials should return 401 INVALID_CREDENTIALS`() {
-        val response = handler.handleInvalidCredentials(ApplicationException.InvalidCredentials(), request)
+        val response = handler.handleInvalidCredentials(ApplicationException.InvalidCredentials())
         response.statusCode shouldBe HttpStatus.UNAUTHORIZED
         response.body!!.code shouldBe "INVALID_CREDENTIALS"
     }
 
     @Test
     fun `UserInactive should return 401 INVALID_CREDENTIALS`() {
-        val response = handler.handleInvalidCredentials(ApplicationException.UserInactive(), request)
+        val response = handler.handleInvalidCredentials(ApplicationException.UserInactive())
         response.statusCode shouldBe HttpStatus.UNAUTHORIZED
         response.body!!.code shouldBe "INVALID_CREDENTIALS"
     }
 
     @Test
     fun `EmailAlreadyExists should return 409 REGISTRATION_FAILED`() {
-        val response = handler.handleEmailAlreadyExists(ApplicationException.EmailAlreadyExists(), request)
+        val response = handler.handleEmailAlreadyExists(ApplicationException.EmailAlreadyExists())
         response.statusCode shouldBe HttpStatus.CONFLICT
         response.body!!.code shouldBe "REGISTRATION_FAILED"
     }
 
     @Test
     fun `RefreshTokenExpired should return 401 SESSION_EXPIRED`() {
-        val response = handler.handleRefreshTokenErrors(ApplicationException.RefreshTokenExpired(), request)
+        val response = handler.handleRefreshTokenErrors(ApplicationException.RefreshTokenExpired())
         response.statusCode shouldBe HttpStatus.UNAUTHORIZED
         response.body!!.code shouldBe "SESSION_EXPIRED"
     }
 
     @Test
     fun `RefreshTokenRevoked should return 401 SESSION_EXPIRED`() {
-        val response = handler.handleRefreshTokenErrors(ApplicationException.RefreshTokenRevoked(), request)
+        val response = handler.handleRefreshTokenErrors(ApplicationException.RefreshTokenRevoked())
         response.statusCode shouldBe HttpStatus.UNAUTHORIZED
         response.body!!.code shouldBe "SESSION_EXPIRED"
     }
 
     @Test
     fun `PasswordResetTokenInvalid should return 400 INVALID_RESET_TOKEN`() {
-        val response = handler.handlePasswordResetErrors(ApplicationException.PasswordResetTokenInvalid(), request)
+        val response = handler.handlePasswordResetErrors(ApplicationException.PasswordResetTokenInvalid())
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
         response.body!!.code shouldBe "INVALID_RESET_TOKEN"
     }
 
     @Test
     fun `PasswordResetTokenExpired should return 400 INVALID_RESET_TOKEN`() {
-        val response = handler.handlePasswordResetErrors(ApplicationException.PasswordResetTokenExpired(), request)
+        val response = handler.handlePasswordResetErrors(ApplicationException.PasswordResetTokenExpired())
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
         response.body!!.code shouldBe "INVALID_RESET_TOKEN"
     }
 
     @Test
     fun `UserNotFound should return 404 USER_NOT_FOUND`() {
-        val response = handler.handleUserNotFound(ApplicationException.UserNotFound(), request)
+        val response = handler.handleUserNotFound(ApplicationException.UserNotFound())
         response.statusCode shouldBe HttpStatus.NOT_FOUND
         response.body!!.code shouldBe "USER_NOT_FOUND"
     }
 
     @Test
     fun `OAuthProviderNotSupported should return 400 OAUTH_PROVIDER_NOT_SUPPORTED`() {
-        val response =
-            handler.handleOAuthProviderNotSupported(
-                ApplicationException.OAuthProviderNotSupported(),
-                request
-            )
+        val response = handler.handleOAuthProviderNotSupported(ApplicationException.OAuthProviderNotSupported())
         response.statusCode shouldBe HttpStatus.BAD_REQUEST
         response.body!!.code shouldBe "OAUTH_PROVIDER_NOT_SUPPORTED"
     }
 
     @Test
     fun `OAuthAccountAlreadyLinked should return 409 OAUTH_ACCOUNT_ALREADY_LINKED`() {
-        val response =
-            handler.handleOAuthAccountAlreadyLinked(
-                ApplicationException.OAuthAccountAlreadyLinked(),
-                request
-            )
+        val response = handler.handleOAuthAccountAlreadyLinked(ApplicationException.OAuthAccountAlreadyLinked())
         response.statusCode shouldBe HttpStatus.CONFLICT
         response.body!!.code shouldBe "OAUTH_ACCOUNT_ALREADY_LINKED"
     }
 
     @Test
     fun `LastAuthMethodCannotBeRemoved should return 422 LAST_AUTH_METHOD`() {
-        val response = handler.handleLastAuthMethod(DomainException.LastAuthMethodCannotBeRemoved(), request)
+        val response = handler.handleLastAuthMethod(DomainException.LastAuthMethodCannotBeRemoved())
         response.statusCode shouldBe HttpStatus.UNPROCESSABLE_ENTITY
         response.body!!.code shouldBe "LAST_AUTH_METHOD"
     }
@@ -136,7 +126,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     fun `unhandled exception should return 500 INTERNAL_ERROR`() {
-        val response = handler.handleGeneric(RuntimeException("unexpected"), request)
+        val response = handler.handleGeneric(RuntimeException("unexpected"))
         response.statusCode shouldBe HttpStatus.INTERNAL_SERVER_ERROR
         response.body!!.code shouldBe "INTERNAL_ERROR"
     }
