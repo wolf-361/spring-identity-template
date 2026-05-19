@@ -9,8 +9,10 @@ internal fun sha256(input: String): String =
         .digest(input.toByteArray())
         .joinToString("") { "%02x".format(it) }
 
+private val secureRandom = SecureRandom()
+
 internal fun generateSecureToken(): String {
     val bytes = ByteArray(32)
-    SecureRandom().nextBytes(bytes)
+    secureRandom.nextBytes(bytes)
     return bytes.joinToString("") { "%02x".format(it) }
 }
